@@ -1,0 +1,26 @@
+{{define "body"}} {{template "header"}}
+<nav class="navbar navbar-expand navbar-dark bg-dark">
+  <a class="navbar-brand" href="#"><img src="/imgs/nav_title.png"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarMenu">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+          <i class="fas fa-user"></i>&nbsp;<span id="user"></span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right">
+          <a class="dropdown-item" href="/logout"><i class="fas fa-door-open"></i>&nbsp;Logout</a>
+        </div>
+      </li>        
+    </ul>    
+  </div>
+</nav>
+<script>
+$(document).ready(function() {
+  console.log("TODO: show username on nav menu")
+  //TODO: application logic here
+})
+</script>
+{{template "footer"}} {{end}}
