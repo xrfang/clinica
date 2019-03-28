@@ -1,21 +1,23 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
 
 	audit "github.com/xrfang/go-audit"
+	yaml "gopkg.in/yaml.v2"
 )
 
 type Configuration struct {
-	LogFile string
-	Port    string
-	WebRoot string
-	//TODO: define configuration items
+	LogFile string `yaml:"log_file"`
+	Port    string `yaml:"port"`
+	WebRoot string `yaml:"web_root"`
+	DBPath  string `yaml:"dbPpath"`
+	TLSKey  string `yaml:"tls_key"`
+	TLSCrt  string `yaml:"tls_crt"`
 	binPath string
-	cfgFile string
-	cfgPath string
 }
 
 func (c Configuration) abs(fn string) string {
@@ -26,23 +28,34 @@ func (c Configuration) abs(fn string) string {
 	return p
 }
 
-func (c *Configuration) Load(fn string) {
+func (c *Configuration) load(fn string) (err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			err = e.(error)
+		}
+	}()
 	f, err := os.Open(fn)
 	audit.Assert(err)
 	defer f.Close()
-	//TODO: load configuration from f
-	c.cfgFile = c.abs(fn)
-	c.cfgPath = path.Dir(c.cfgFile)
+	audit.Assert(yaml.NewDecoder(f).Decode(c))
+	c.WebRoot = c.abs(c.WebRoot)
+	c.LogFile = c.abs(c.LogFile)
+	c.DBPath = c.abs(c.DBPath)
+	c.TLSCrt = c.abs(c.TLSCrt)
+	c.TLSKey = c.abs(c.TLSKey)
+	return
 }
 
 var cf Configuration
 
-func loadConfig() {
+func loadConfig(fn string) {
 	cf.binPath = path.Dir(os.Args[0])
 	cf.Port = "8080"
 	cf.WebRoot = "../webroot"
 	cf.LogFile = "../log/log"
-	//TODO: load configuration from file, e.g. cf.Load(...)
-	cf.WebRoot = cf.abs(cf.WebRoot)
-	cf.LogFile = cf.abs(cf.LogFile)
+	cf.DBPath = "../conf/config.db"
+	if err := cf.load(fn); err != nil {
+		fmt.Printf("[ERROR]cf.load(%s): %v\n", fn, err)
+		os.Exit(1)
+	}
 }

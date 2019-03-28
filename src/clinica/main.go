@@ -6,13 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/xrfang/go-session"
+
 	audit "github.com/xrfang/go-audit"
 	res "github.com/xrfang/go-res"
 )
 
+var sessions *session.Manager
+
 func main() {
 	ver := flag.Bool("version", false, "show version info")
 	pkg := flag.String("pack", "", "pack resources under directory")
+	cfg := flag.String("conf", "", "configuration file")
 	dbg := flag.Bool("debug", false, "debug mode")
 	flag.Parse()
 	if *ver {
@@ -24,10 +29,13 @@ func main() {
 		fmt.Printf("resources under '%s' packed.\n", *pkg)
 		return
 	}
-	loadConfig()
-	if !*dbg {
-		audit.Assert(res.Extract(cf.WebRoot, res.OverwriteIfNewer))
+	if *cfg == "" {
+		fmt.Println("missing configuration (-conf)")
+		return
 	}
+	loadConfig(*cfg)
+	sessions = session.NewManager(&session.Config{TTL: 3600})
+	audit.Assert(res.Extract(cf.WebRoot, res.OverwriteIfNewer))
 	audit.ExpVars(map[string]interface{}{
 		"config":  cf,
 		"version": _G_REVS + "." + _G_HASH,
@@ -41,5 +49,9 @@ func main() {
 		ReadTimeout:  time.Minute,
 		WriteTimeout: time.Minute,
 	}
-	audit.Assert(svr.ListenAndServe())
+	if cf.TLSCrt != "" && cf.TLSKey != "" {
+		audit.Assert(svr.ListenAndServeTLS(cf.TLSCrt, cf.TLSKey))
+	} else {
+		audit.Assert(svr.ListenAndServe())
+	}
 }

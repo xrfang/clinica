@@ -13,6 +13,9 @@
 #if <branch> omitted, master is assumed, and the default value for <commit> is HEAD.
 
 # Following are sample dependencies, modify as appropriate.
-
+gopkg.in/yaml.v2
+https://github.com/mattn/go-sqlite3
 https://github.com/xrfang/go-audit
+https://github.com/xrfang/go-dbop
 https://github.com/xrfang/go-res
+https://github.com/xrfang/go-session
