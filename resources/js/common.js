@@ -10,6 +10,7 @@ function toast(title, mesg) {
         textAlign: 'left',
         allowToastClose: false,
         stack: false,
+        hideAfter: 5000,
         showHideTransition: 'fade'
     })
 }
