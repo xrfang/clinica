@@ -1,5 +1,6 @@
 bin/*
 github.com
+golang.org
 gopkg.in
 log/*
 pkg/*

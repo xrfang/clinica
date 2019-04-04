@@ -10,5 +10,15 @@ func home(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, path.Join(cf.WebRoot, r.URL.Path))
 		return
 	}
-	renderTemplate(w, "home.html", nil)
+	s := sessions.Get(w, r)
+	var u *user
+	if !s.Get("user", &u) || u == nil {
+		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+		return
+	}
+	renderTemplate(w, "home.html", struct {
+		IsAdmin bool
+	}{
+		IsAdmin: u.Role == RoleAdmin,
+	})
 }

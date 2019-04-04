@@ -13,7 +13,9 @@
 #if <branch> omitted, master is assumed, and the default value for <commit> is HEAD.
 
 # Following are sample dependencies, modify as appropriate.
+golang.org/x/crypto/bcrypt
 gopkg.in/yaml.v2
+https://github.com/jmoiron/sqlx
 https://github.com/mattn/go-sqlite3
 https://github.com/xrfang/go-audit
 https://github.com/xrfang/go-dbop

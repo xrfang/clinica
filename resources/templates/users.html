@@ -1,0 +1,111 @@
+{{define "body"}} {{template "header"}}
+<nav class="navbar navbar-expand navbar-dark bg-dark" style="padding: 0 4 0 4">
+    <a class="navbar-brand" href="#">&nbsp;用户管理</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMenu">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <i class="fas fa-user"></i>&nbsp;<span id="user"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="/"><i class="fas fa-book"></i>&nbsp;返回医案</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/logout"><i class="fas fa-door-open"></i>&nbsp;退出</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container" , style="margin-top:1rem;text-align:center">
+    <button class="btn btn-success" style="margin:0.5rem;width:300px" onclick="editUser(this)">添加新用户</button>
+    {{range . }}
+    <div class="dropdown" style="margin:0.5rem;cursor:pointer;display:inline-block">
+        <button class='btn btn-{{index . "style"}}' onclick="editUser(this)" style="width:300px"
+            login='{{index . "login"}}' role='{{index . "role"}}' user='{{index . "name"}}'>
+            {{index . "login"}} ({{index . "name"}})
+        </button>
+    </div>
+    {{end}}
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="ud">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新建用户</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label for="login" class="col-3 col-form-label col-form-label">用户名</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="login">
+                        <small class="form-text text-muted">允许英文字母和数字，长度1~16个字符</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="passwd" class="col-3 col-form-label col-form-label">密码</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="passwd">
+                        <small class="form-text text-muted">由管理员设置的临时密码应该尽快修改</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="name" class="col-3 col-form-label col-form-label">真实姓名</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="name">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="role" class="col-3 col-form-label col-form-label">权限/状态</label>
+                    <div class="col-9">
+                        <select id="role" class="form-control">
+                            <option value="-1">禁用</option>
+                            <option value="0">读者</option>
+                            <option value="1">编辑</option>
+                            <option value="2">管理员</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="del" class="btn btn-danger mr-auto" onclick="deleteUser()">删除</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" onclick="submitUserData()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function editUser(btn) {
+        var login = $(btn).attr("login")
+        if (typeof (login) == "undefined") {
+            $('#ud .modal-title').text('新建用户')
+            $('#ud #del').css("display", "none")
+            $('#ud #login').prop('disabled', false)
+            $('#ud #role option').eq(1).prop('selected', true)
+        } else {
+            var role = parseInt($(btn).attr("role")) + 1
+            var user = $(btn).attr("user")
+            $('#ud .modal-title').text('编辑用户')
+            $('#ud #del').css("display", "")
+            $('#ud #login').val(login)
+            $('#ud #name').val(user)
+            $('#ud #login').prop('disabled', true)
+            $('#ud #role option:eq(' + role + ')').prop('selected', true)
+        }
+        $('#ud').modal()
+    }
+    function submitUserData() {
+        console.log("do submission...")
+    }
+    function deleteUser() {
+
+    }
+    $(document).ready(function () {
+        console.log("TODO: show username on nav menu")
+        //TODO: application logic here
+    })
+</script>
+{{template "footer"}} {{end}}

@@ -1,0 +1,7 @@
+---
+log_file: ../log/log
+port: 2562
+web_root: ../webroot
+db_path: ../conf/clinica.db
+tls_key:
+tls_crt:

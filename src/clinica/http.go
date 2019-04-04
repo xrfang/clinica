@@ -30,7 +30,7 @@ func setCookie(w http.ResponseWriter, name, value string, age int) {
 func renderTemplate(w http.ResponseWriter, tpl string, args interface{}) {
 	defer func() {
 		if e := recover(); e != nil {
-			http.Error(w, e.(error).Error(), http.StatusInternalServerError)
+			audit.Error("", "%v", e)
 		}
 	}()
 	helper := template.FuncMap{

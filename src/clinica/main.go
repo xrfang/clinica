@@ -34,8 +34,10 @@ func main() {
 		return
 	}
 	loadConfig(*cfg)
-	sessions = session.NewManager(&session.Config{TTL: 3600})
-	audit.Assert(res.Extract(cf.WebRoot, res.OverwriteIfNewer))
+	sessions = session.NewManager(&session.Config{TTL: 7200})
+	if !*dbg {
+		audit.Assert(res.Extract(cf.WebRoot, res.OverwriteIfNewer))
+	}
 	audit.ExpVars(map[string]interface{}{
 		"config":  cf,
 		"version": _G_REVS + "." + _G_HASH,

@@ -6,8 +6,17 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 	audit "github.com/xrfang/go-audit"
 	yaml "gopkg.in/yaml.v2"
+)
+
+const (
+	RoleDisabled = -1
+	RoleReader   = 0
+	RoleEditor   = 1
+	RoleAdmin    = 2
 )
 
 type Configuration struct {
@@ -18,6 +27,7 @@ type Configuration struct {
 	TLSKey  string `yaml:"tls_key"`
 	TLSCrt  string `yaml:"tls_crt"`
 	binPath string
+	dbx     *sqlx.DB
 }
 
 func (c Configuration) abs(fn string) string {
@@ -46,16 +56,70 @@ func (c *Configuration) load(fn string) (err error) {
 	return
 }
 
+func (c *Configuration) initDB() {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Println(audit.Trace("initDB: %v", e).Error())
+			os.Exit(1)
+		}
+	}()
+	err := os.MkdirAll(path.Dir(c.DBPath), 0755)
+	audit.Assert(err)
+	dsn := fmt.Sprintf("file:%s?cache=shared", c.DBPath)
+	c.dbx = sqlx.MustConnect("sqlite3", dsn)
+	c.dbx.SetMaxOpenConns(1)
+	//用户表
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS users ( 
+		login TEXT NOT NULL,
+		passwd TEXT NOT NULL,
+		name TEXT NOT NULL DEFAULT '',
+		role INTEGER NOT NULL DEFAULT 0,
+		PRIMARY KEY(login)
+	)`)
+	c.dbx.MustExec(`INSERT OR IGNORE INTO users (login,passwd,name,role) VALUES (?,?,?,?)`,
+		"admin", HashPassword("Password01!"), "管理员", RoleAdmin)
+	//病人表
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS patients (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
+		gender INTEGER NOT NULL,
+		birthyear INTEGER NOT NULL,
+		contact TEXT,
+		comment TEXT
+	)`)
+	//病案
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS cases (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		patient_id INTEGER NOT NULL,
+		summary TEXT NOT NULL DEFAULT '',
+		date INTEGER NOT NULL,
+		updated INTEGER NOT NULL,
+		FOREIGN KEY(patient_id) REFERENCES patients(id)
+	)`)
+	//条目
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS items (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		case_id INTEGER NOT NULL,
+		type INTEGER NOT NULL,
+		caption TEXT NOT NULL DEFAULT '',
+		details TEXT NOT NULL DEFAULT '',
+		date INTEGER NOT NULL,
+		updated INTEGER NOT NULL,
+		FOREIGN KEY(case_id) REFERENCES cases(id)
+	)`)
+}
+
 var cf Configuration
 
 func loadConfig(fn string) {
 	cf.binPath = path.Dir(os.Args[0])
-	cf.Port = "8080"
+	cf.Port = "2562"
 	cf.WebRoot = "../webroot"
 	cf.LogFile = "../log/log"
-	cf.DBPath = "../conf/config.db"
+	cf.DBPath = "../conf/clinica.db"
 	if err := cf.load(fn); err != nil {
 		fmt.Printf("[ERROR]cf.load(%s): %v\n", fn, err)
 		os.Exit(1)
 	}
+	cf.initDB()
 }
