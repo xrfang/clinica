@@ -17,27 +17,35 @@ func users(w http.ResponseWriter, r *http.Request) {
 	if u.Role != RoleAdmin {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	}
-	var us []user
-	audit.Assert(cf.dbx.Select(&us, "SELECT name,login,role FROM users ORDER BY role DESC,login"))
-	var ul []map[string]string
-	for _, u := range us {
-		var style string
-		switch u.Role {
-		case RoleDisabled:
-			style = "secondary"
-		case RoleReader:
-			style = "info"
-		case RoleEditor:
-			style = "primary"
-		case RoleAdmin:
-			style = "danger"
+	switch r.Method {
+	case "GET":
+		var us []user
+		audit.Assert(cf.dbx.Select(&us, "SELECT name,login,role FROM users ORDER BY role DESC,login"))
+		var ul []map[string]string
+		for _, u := range us {
+			var style string
+			switch u.Role {
+			case RoleDisabled:
+				style = "secondary"
+			case RoleReader:
+				style = "info"
+			case RoleEditor:
+				style = "primary"
+			case RoleAdmin:
+				style = "danger"
+			}
+			ul = append(ul, map[string]string{
+				"name":  u.Name,
+				"login": u.Login,
+				"role":  strconv.Itoa(u.Role),
+				"style": style,
+			})
 		}
-		ul = append(ul, map[string]string{
-			"name":  u.Name,
-			"login": u.Login,
-			"role":  strconv.Itoa(u.Role),
-			"style": style,
-		})
+		renderTemplate(w, "users.html", ul)
+	case "POST":
+
+	case "DELETE":
+		login := r.URL.Query().Get("login")
+		cf.dbx.MustExec(`DELETE FROM users WHERE login=?`, login)
 	}
-	renderTemplate(w, "users.html", ul)
 }

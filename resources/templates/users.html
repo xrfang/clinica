@@ -19,7 +19,7 @@
         </ul>
     </div>
 </nav>
-<div class="container" , style="margin-top:1rem;text-align:center">
+<div class="container justify-content-center align-items-center" , style="margin-top:1rem;">
     <button class="btn btn-success" style="margin:0.5rem;width:300px" onclick="editUser(this)">添加新用户</button>
     {{range . }}
     <div class="dropdown" style="margin:0.5rem;cursor:pointer;display:inline-block">
@@ -38,32 +38,32 @@
             </div>
             <div class="modal-body">
                 <div class="form-group row">
-                    <label for="login" class="col-3 col-form-label col-form-label">用户名</label>
+                    <label for="login" class="col-3 col-form-label col-form-label">用户</label>
                     <div class="col-9">
                         <input type="text" class="form-control" id="login">
-                        <small class="form-text text-muted">允许英文字母和数字，长度1~16个字符</small>
+                        <small class="form-text text-muted">允许英文字母和数字，长度1~16</small>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="passwd" class="col-3 col-form-label col-form-label">密码</label>
                     <div class="col-9">
                         <input type="text" class="form-control" id="passwd">
-                        <small class="form-text text-muted">由管理员设置的临时密码应该尽快修改</small>
+                        <small class="form-text text-muted">临时密码，应该尽快修改</small>
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="name" class="col-3 col-form-label col-form-label">真实姓名</label>
+                    <label for="name" class="col-3 col-form-label col-form-label">姓名</label>
                     <div class="col-9">
                         <input type="text" class="form-control" id="name">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="role" class="col-3 col-form-label col-form-label">权限/状态</label>
+                    <label for="role" class="col-3 col-form-label col-form-label">权限</label>
                     <div class="col-9">
                         <select id="role" class="form-control">
                             <option value="-1">禁用</option>
-                            <option value="0">读者</option>
-                            <option value="1">编辑</option>
+                            <option value="0">读者（只能阅读医案）</option>
+                            <option value="1">编辑（可以编辑医案）</option>
                             <option value="2">管理员</option>
                         </select>
                     </div>
@@ -77,9 +77,11 @@
         </div>
     </div>
 </div>
+{{template "confirm"}}
 <script>
     function editUser(btn) {
         var login = $(btn).attr("login")
+        $('#ud #passwd').val('')
         if (typeof (login) == "undefined") {
             $('#ud .modal-title').text('新建用户')
             $('#ud #del').css("display", "none")
@@ -98,10 +100,26 @@
         $('#ud').modal()
     }
     function submitUserData() {
-        console.log("do submission...")
+        var data = {}
+        data.login = $('#ud #login').val()
+        data.passwd = $('#ud #passwd').val()
+        data.name = $('#ud #name').val()
+        data.role = $('#ud #role').val()
+        console.log("do submission:", data)
     }
     function deleteUser() {
-
+        var login = $('#ud #login').val()
+        confirm("请确认", `您将要删除用户【${login}】...`, function() {
+            $.ajax({
+                url: "/users?login="+login,
+                method: "DELETE",
+                success: function() {
+                    console.log("deleted...")
+                    //$('#ud').modal("hide")
+                    location.reload(true)
+                }
+            })
+        })
     }
     $(document).ready(function () {
         console.log("TODO: show username on nav menu")
