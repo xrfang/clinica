@@ -39,7 +39,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	if user != "" && pass != "" {
 		u := getUser(user, pass)
 		if u != nil {
-			s.Set("user", u)
+			s.Marshal("user", u)
 			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 			return
 		}

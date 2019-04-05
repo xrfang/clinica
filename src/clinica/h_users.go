@@ -9,8 +9,8 @@ import (
 
 func users(w http.ResponseWriter, r *http.Request) {
 	s := sessions.Get(w, r)
-	var u *user
-	if !s.Get("user", &u) || u == nil {
+	var u user
+	if s.Unmarshal("user", &u) != nil {
 		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 		return
 	}
