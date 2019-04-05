@@ -34,7 +34,7 @@ func main() {
 		return
 	}
 	loadConfig(*cfg)
-	sessions = session.NewManager(&session.Config{TTL: 7200})
+	sessions = session.NewManager(&session.Config{TTL: 7200, Persist: "/tmp/clinica/sessions"})
 	if !*dbg {
 		audit.Assert(res.Extract(cf.WebRoot, res.OverwriteIfNewer))
 	}

@@ -47,6 +47,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 	if user == "" {
 		user = getCookie(r, "user")
+	} else {
+		setCookie(w, "user", user, 86400*30)
 	}
 	renderTemplate(w, "login.html", struct {
 		User string
