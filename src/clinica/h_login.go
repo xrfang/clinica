@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"net/http"
 
 	audit "github.com/xrfang/go-audit"
@@ -8,8 +9,8 @@ import (
 
 type user struct {
 	Login  string
-	Passwd string
-	Name   string
+	Passwd sql.NullString
+	Name   sql.NullString
 	Role   int
 }
 
@@ -19,7 +20,7 @@ func getUser(login, passwd string) *user {
 	if err != nil || u.Role == RoleDisabled {
 		return nil
 	}
-	if CheckPasswordHash(passwd, u.Passwd) {
+	if CheckPasswordHash(passwd, u.Passwd.String) {
 		return &u
 	}
 	return nil
@@ -39,6 +40,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	if user != "" && pass != "" {
 		u := getUser(user, pass)
 		if u != nil {
+			setCookie(w, "user", user, 86400*30)
 			s.Marshal("user", u)
 			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 			return
@@ -47,8 +49,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 	if user == "" {
 		user = getCookie(r, "user")
-	} else {
-		setCookie(w, "user", user, 86400*30)
 	}
 	renderTemplate(w, "login.html", struct {
 		User string

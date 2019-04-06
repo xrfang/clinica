@@ -71,8 +71,8 @@ func (c *Configuration) initDB() {
 	//用户表
 	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS users ( 
 		login TEXT NOT NULL,
-		passwd TEXT NOT NULL,
-		name TEXT NOT NULL DEFAULT '',
+		passwd TEXT,
+		name TEXT,
 		role INTEGER NOT NULL DEFAULT 0,
 		PRIMARY KEY(login)
 	)`)

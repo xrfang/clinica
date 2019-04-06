@@ -25,7 +25,7 @@
     <button class='btn btn-{{index . "style"}}' onclick="editUser(this)"
         style="width:300px;margin:0.5rem;cursor:pointer" login='{{index . "login"}}' role='{{index . "role"}}'
         user='{{index . "name"}}'>
-        {{index . "login"}} ({{index . "name"}})
+        {{index . "login"}}{{if index . "name"}} ({{index . "name"}}){{end}}
     </button>
     {{end}}
 </div>
@@ -83,6 +83,9 @@
         $('#ud #passwd').val('')
         if (typeof (login) == "undefined") {
             $('#ud .modal-title').text('新建用户')
+            $('#ud #login').val('')
+            $('#ud #name').val('')
+            $('#ud #role option:eq(0)').prop('selected', true)
             $('#ud #del').css("display", "none")
             $('#ud #login').prop('disabled', false)
             $('#ud #role option').eq(1).prop('selected', true)
@@ -105,9 +108,8 @@
         data.name = $('#ud #name').val()
         data.role = $('#ud #role').val()
         $.post("/users", data, function () {
-            console.log("submitted...")
+            location.reload(true)
         })
-        console.log("do submission:", data)
     }
     function deleteUser() {
         var login = $('#ud #login').val()
@@ -116,8 +118,6 @@
                 url: "/users?login=" + login,
                 method: "DELETE",
                 success: function () {
-                    console.log("deleted...")
-                    //$('#ud').modal("hide")
                     location.reload(true)
                 }
             })
