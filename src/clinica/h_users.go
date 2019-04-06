@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"io"
 	"net/http"
-	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -41,20 +38,22 @@ func users(w http.ResponseWriter, r *http.Request) {
 				style = "danger"
 			}
 			ul = append(ul, map[string]string{
-				"name":  u.Name.String,
-				"login": u.Login,
-				"role":  strconv.Itoa(u.Role),
-				"style": style,
+				"caption": u.Caption(),
+				"name":    u.Name.String,
+				"login":   u.Login,
+				"role":    strconv.Itoa(u.Role),
+				"style":   style,
 			})
 		}
-		renderTemplate(w, "users.html", ul)
+		renderTemplate(w, "users.html", struct {
+			Admin string
+			Users []map[string]string
+		}{
+			Admin: u.Caption(),
+			Users: ul,
+		})
 	case "POST":
-		var buf bytes.Buffer
-		_, err := io.Copy(&buf, r.Body)
-		audit.Assert(err)
-		args, err := url.ParseQuery(buf.String())
-		audit.Assert(err)
-		login := strings.TrimSpace(args.Get("login"))
+		login := strings.TrimSpace(r.FormValue("login"))
 		if login == "" {
 			http.Error(w, "登录名(login)不能为空", http.StatusBadRequest)
 			return
@@ -64,7 +63,7 @@ func users(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "登录名(login)格式不符合要求", http.StatusBadRequest)
 			return
 		}
-		role, err := strconv.Atoi(args.Get("role"))
+		role, err := strconv.Atoi(r.FormValue("role"))
 		if err != nil || role < -1 || role > 2 {
 			http.Error(w, "权限设置(role)错误", http.StatusBadRequest)
 			return
@@ -72,7 +71,7 @@ func users(w http.ResponseWriter, r *http.Request) {
 		keys := []string{"login", "role"}
 		vals := []interface{}{login, role}
 		upds := `) ON CONFLICT(login) DO UPDATE SET role=?`
-		name := strings.TrimSpace(args.Get("name"))
+		name := strings.TrimSpace(r.FormValue("name"))
 		if name != "" {
 			if len(name) > 32 {
 				http.Error(w, "姓名长度超过限制", http.StatusBadRequest)
@@ -82,7 +81,7 @@ func users(w http.ResponseWriter, r *http.Request) {
 			vals = append(vals, name)
 			upds += `,name=?`
 		}
-		passwd := strings.TrimSpace(args.Get("passwd"))
+		passwd := r.FormValue("passwd")
 		if passwd != "" {
 			keys = append(keys, "passwd")
 			vals = append(vals, HashPassword(passwd))
@@ -97,6 +96,10 @@ func users(w http.ResponseWriter, r *http.Request) {
 		}
 	case "DELETE":
 		login := r.URL.Query().Get("login")
+		if login == u.Login {
+			http.Error(w, "不能删除当前用户", http.StatusForbidden)
+			return
+		}
 		cf.dbx.MustExec(`DELETE FROM users WHERE login=?`, login)
 	}
 }

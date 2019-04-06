@@ -14,6 +14,13 @@ type user struct {
 	Role   int
 }
 
+func (u user) Caption() string {
+	if u.Name.String != "" {
+		return u.Login + " (" + u.Name.String + ")"
+	}
+	return u.Login
+}
+
 func getUser(login, passwd string) *user {
 	var u user
 	err := cf.dbx.Get(&u, "SELECT * FROM users WHERE login=?", login)

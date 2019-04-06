@@ -8,22 +8,77 @@
     <ul class="navbar-nav ml-auto">
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-          <i class="fas fa-user"></i>&nbsp;<span id="user"></span>
+          <i class="fas fa-user"></i>&nbsp;<b>{{.Caption}}</b>
         </a>
         <div class="dropdown-menu dropdown-menu-right">
+          <a class="dropdown-item" href="javascript:changePassword()"><i class="fas fa-key"></i>&nbsp;修改密码</a>
           {{if .IsAdmin}}
           <a class="dropdown-item" href="/users"><i class="fas fa-user-edit"></i>&nbsp;用户管理</a>
           {{end}}
+          <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="/logout"><i class="fas fa-door-open"></i>&nbsp;退出</a>
         </div>
-      </li>        
-    </ul>    
+      </li>
+    </ul>
   </div>
 </nav>
+<div id="chpasswd" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">修改密码</h5>
+      </div>
+      <div class="modal-body">
+        <div class="form-group row">
+          <label for="old" class="col-3 col-form-label col-form-label">原密码</label>
+          <div class="col-9">
+            <input type="password" class="form-control" id="old">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="new" class="col-3 col-form-label col-form-label">新密码</label>
+          <div class="col-9">
+            <input type="password" class="form-control" id="new">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="new2" class="col-3 col-form-label col-form-label">再次输入</label>
+          <div class="col-9">
+            <input type="password" class="form-control" id="new2">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span class="mr-auto" style="color:red" id="errmsg">错误信息...</span>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-success" onclick="submitNewPass()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
-$(document).ready(function() {
-  console.log("TODO: show username on nav menu")
-  //TODO: application logic here
-})
+  function changePassword() {
+    $('#chpasswd #errmsg').text('')
+    $('#chpasswd').modal()
+  }
+  function submitNewPass() {
+    var old = $('#chpasswd #old').val()
+    var new1 = $('#chpasswd #new').val()
+    var new2 = $('#chpasswd #new2').val()
+    if (old == "") {
+      $('#chpasswd #errmsg').text('原密码没有输入')
+      return
+    }
+    if (new1 != new2) {
+      $('#chpasswd #errmsg').text('新密码两次输入不一致')
+      return
+    }
+    if (new1 == '') {
+      $('#chpasswd #errmsg').text('新密码不能为空')
+      return
+    }
+    console.log("TODO: submit new password")
+    $('#chpasswd').modal('hide')
+  }
 </script>
 {{template "footer"}} {{end}}

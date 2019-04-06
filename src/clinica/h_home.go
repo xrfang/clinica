@@ -16,9 +16,15 @@ func home(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 		return
 	}
+	caption := u.Login
+	if u.Name.String != "" {
+		caption += " (" + u.Name.String + ")"
+	}
 	renderTemplate(w, "home.html", struct {
+		Caption string
 		IsAdmin bool
 	}{
+		Caption: u.Caption(),
 		IsAdmin: u.Role == RoleAdmin,
 	})
 }

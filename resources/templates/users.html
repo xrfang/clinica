@@ -8,7 +8,7 @@
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                    <i class="fas fa-user"></i>&nbsp;<span id="user"></span>
+                    <i class="fas fa-user"></i>&nbsp;<b>{{.Admin}}</b>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <a class="dropdown-item" href="/"><i class="fas fa-book"></i>&nbsp;返回医案</a>
@@ -21,11 +21,11 @@
 </nav>
 <div class="container" style="margin-top:1rem;text-align:center">
     <button class="btn btn-success" style="margin:0.5rem;width:300px" onclick="editUser(this)">添加新用户</button>
-    {{range . }}
+    {{range .Users }}
     <button class='btn btn-{{index . "style"}}' onclick="editUser(this)"
         style="width:300px;margin:0.5rem;cursor:pointer" login='{{index . "login"}}' role='{{index . "role"}}'
         user='{{index . "name"}}'>
-        {{index . "login"}}{{if index . "name"}} ({{index . "name"}}){{end}}
+        {{index . "caption"}}
     </button>
     {{end}}
 </div>
