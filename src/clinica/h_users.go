@@ -21,6 +21,7 @@ func users(w http.ResponseWriter, r *http.Request) {
 	}
 	if u.Role != RoleAdmin {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
 	}
 	switch r.Method {
 	case "GET":
