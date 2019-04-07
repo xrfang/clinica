@@ -14,7 +14,7 @@ func chpass(w http.ResponseWriter, r *http.Request) {
 	}
 	op := r.FormValue("old")
 	if !CheckPasswordHash(op, u.Passwd.String) {
-		http.Error(w, "原密码错误", http.StatusForbidden)
+		http.Error(w, "原密码不正确", http.StatusForbidden)
 		return
 	}
 	np := r.FormValue("new")

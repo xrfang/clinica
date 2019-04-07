@@ -16,7 +16,9 @@ function toast(title, mesg) {
 }
 
 $(document).ajaxError(function(_, xhr, settings) {
-    stat = xhr.status + " " + xhr.statusText
-    mesg = settings.type + ' ' + settings.url + '<br><p style="white-space:pre">' + xhr.responseText + '</p>'
+    //stat = xhr.status + " " + xhr.statusText
+    //mesg = settings.type + ' ' + settings.url + '<br><p style="white-space:pre">' + xhr.responseText + '</p>'
+    var stat = `操作失败`
+    var mesg = `<p>${xhr.responseText}</p>`
     toast(stat, mesg)
 });
