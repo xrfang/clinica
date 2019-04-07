@@ -22,6 +22,17 @@
     </ul>
   </div>
 </nav>
+<div class="container" style="margin-top:1rem">
+  <form id="search" autocomplete="off">
+    <div class="input-group mb-2 mr-sm-2">
+      <input type="text" class="form-control" id="terms" placeholder="搜索医案">
+      <div class="input-group-append">
+        <div class="input-group-text" style="cursor:pointer" onclick="doSearch()"><i class="fas fa-search"></i></div>
+      </div>
+    </div>
+  </form>
+  <div id="cases"></div>
+</div>
 <div id="chpasswd" class="modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -57,6 +68,27 @@
   </div>
 </div>
 <script>
+  function getCases() {
+    $.get("/listcases", null, function (ret) {
+      $("#cases").empty()
+      $.each(ret, function (i, c) {
+        var bg = (i % 2 == 1) ? "#f0f0f0" : "white"
+        $('#cases').append(`
+<div class="card" style="margin-bottom:0.5rem;background:${bg}">
+  <div class="card-body">
+    <div class="card-title" style="display:inline-block;font-weight:bold">${c.name} ${c.gender} ${c.age}岁</div>
+    <div style="display:inline-block" class="float-right">首诊：${c.date}</div>
+    <p class="card-text">${c.summary}</p>
+  </div>
+</div>        
+        `)
+        console.log(c)
+      })
+    }, "JSON")
+  }
+  function doSearch() {
+    toast("操作失败", "搜索功能暂未实现")
+  }
   function changePassword() {
     $('#chpasswd #old').val('')
     $('#chpasswd #new1').val('')
@@ -85,5 +117,8 @@
       $('#chpasswd').modal('hide')
     })
   }
+  $(function () {
+    getCases()
+  });
 </script>
 {{template "footer"}} {{end}}

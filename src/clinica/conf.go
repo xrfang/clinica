@@ -78,23 +78,17 @@ func (c *Configuration) initDB() {
 	)`)
 	c.dbx.MustExec(`INSERT OR IGNORE INTO users (login,passwd,name,role) VALUES (?,?,?,?)`,
 		"admin", HashPassword("Password01!"), "管理员", RoleAdmin)
-	//病人表
-	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS patients (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL,
-		gender INTEGER NOT NULL,
-		birthyear INTEGER NOT NULL,
-		contact TEXT,
-		comment TEXT
-	)`)
 	//病案
 	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS cases (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		patient_id INTEGER NOT NULL,
-		summary TEXT NOT NULL DEFAULT '',
-		date INTEGER NOT NULL,
-		updated INTEGER NOT NULL,
-		FOREIGN KEY(patient_id) REFERENCES patients(id)
+		name TEXT NOT NULL,
+		gender INTEGER NOT NULL,
+		age INTEGER NOT NULL,
+		contact TEXT,
+		memo TEXT,
+		summary TEXT,
+		date DATE NOT NULL,
+		updated DATETIME NOT NULL
 	)`)
 	//条目
 	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS items (
@@ -103,8 +97,8 @@ func (c *Configuration) initDB() {
 		type INTEGER NOT NULL,
 		caption TEXT NOT NULL DEFAULT '',
 		details TEXT NOT NULL DEFAULT '',
-		date INTEGER NOT NULL,
-		updated INTEGER NOT NULL,
+		date DATE NOT NULL,
+		updated DATETIME NOT NULL,
 		FOREIGN KEY(case_id) REFERENCES cases(id)
 	)`)
 }

@@ -10,4 +10,5 @@ func setupRoutes() {
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/users", users)
 	http.HandleFunc("/chpass", chpass)
+	http.HandleFunc("/listcases", listCases)
 }
