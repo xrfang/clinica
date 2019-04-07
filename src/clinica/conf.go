@@ -94,6 +94,7 @@ func (c *Configuration) initDB() {
 	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS items (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		case_id INTEGER NOT NULL,
+		session INTEGER NOT NULL,
 		type INTEGER NOT NULL,
 		caption TEXT NOT NULL DEFAULT '',
 		details TEXT NOT NULL DEFAULT '',

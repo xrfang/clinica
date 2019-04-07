@@ -21,10 +21,12 @@ func home(w http.ResponseWriter, r *http.Request) {
 		caption += " (" + u.Name.String + ")"
 	}
 	renderTemplate(w, "home.html", struct {
-		Caption string
-		IsAdmin bool
+		Caption  string
+		IsEditor bool
+		IsAdmin  bool
 	}{
-		Caption: u.Caption(),
-		IsAdmin: u.Role == RoleAdmin,
+		Caption:  u.Caption(),
+		IsAdmin:  u.Role == RoleAdmin,
+		IsEditor: u.Role >= RoleEditor,
 	})
 }
