@@ -9,4 +9,5 @@ func setupRoutes() {
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/users", users)
+	http.HandleFunc("/chpass", chpass)
 }

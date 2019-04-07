@@ -77,8 +77,10 @@
       $('#chpasswd #errmsg').text('新密码不能为空')
       return
     }
-    console.log("TODO: submit new password")
-    $('#chpasswd').modal('hide')
+    $('#chpasswd #errmsg').text('')
+    $.post("/chpass", { old: old, new: new1 }, function () {
+      $('#chpasswd').modal('hide')
+    })
   }
 </script>
 {{template "footer"}} {{end}}
