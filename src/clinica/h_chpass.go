@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -25,5 +24,4 @@ func chpass(w http.ResponseWriter, r *http.Request) {
 	}
 	u.Passwd.String = HashPassword(np)
 	s.Marshal("user", u)
-	fmt.Println("change password from", op, "to", np)
 }
