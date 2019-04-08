@@ -68,39 +68,54 @@ func (c *Configuration) initDB() {
 	dsn := fmt.Sprintf("file:%s?cache=shared", c.DBPath)
 	c.dbx = sqlx.MustConnect("sqlite3", dsn)
 	c.dbx.SetMaxOpenConns(1)
-	//用户表
-	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS users ( 
-		login TEXT NOT NULL,
-		passwd TEXT,
-		name TEXT,
-		role INTEGER NOT NULL DEFAULT 0,
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS users --本系统用户表
+	( 
+		login  TEXT NOT NULL,    --登录用户名
+		passwd TEXT,             --密码（使用BCrypt加密保存）
+		name   TEXT,             --姓名
+		role   INTEGER NOT NULL, --权限（-1=禁止登录；0=读者；1=编辑；2=管理员）
 		PRIMARY KEY(login)
 	)`)
 	c.dbx.MustExec(`INSERT OR IGNORE INTO users (login,passwd,name,role) VALUES (?,?,?,?)`,
 		"admin", HashPassword("Password01!"), "管理员", RoleAdmin)
-	//病案
-	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS cases (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL,
-		gender INTEGER NOT NULL,
-		age INTEGER NOT NULL,
-		contact TEXT,
-		memo TEXT,
-		summary TEXT,
-		date DATE NOT NULL,
-		updated DATETIME NOT NULL
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS patients --患者注册表
+	(
+		id       INTEGER PRIMARY KEY AUTOINCREMENT,
+		name     TEXT NOT NULL,     --姓名
+		gender   INTEGER NOT NULL,  --性别
+		birthday INTEGER NOT NULL,  --生日（格式：yyyymmdd）
+		contact  TEXT,              --联系方式（一般为手机号）
+		memo     TEXT               --备注
 	)`)
-	//条目
-	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS items (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		case_id INTEGER NOT NULL,
-		session INTEGER NOT NULL,
-		type INTEGER NOT NULL,
-		caption TEXT NOT NULL DEFAULT '',
-		details TEXT NOT NULL DEFAULT '',
-		date DATE NOT NULL,
-		updated DATETIME NOT NULL,
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS cases --医案表（一病一案，一个患者可有多个一案）
+	(
+		id         INTEGER PRIMARY KEY AUTOINCREMENT,
+		patient_id INTEGER NOT NULL,  --患者ID
+		summary    TEXT,              --简述（由医生填写，而非病人主诉）
+		opened     DATA NOT NULL,     --首诊日期（格式：yyyymmdd）
+		status     INTEGER NOT NULL,  --状态（0=尚未结束；1=痊愈/显效；2=失败；3=无反馈）
+		updated    DATETIME NOT NULL, --最后编辑时间
+		FOREIGN KEY(patient_id) REFERENCES patients(id)
+	)`)
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS sessions -- 就诊记录表（一个医案可有多个就诊记录）
+	(
+		id      INTEGER PRIMARY KEY AUTOINCREMENT,
+		case_id INTEGER NOT NULL,  --医案ID
+		mode    INTEGER NOT NULL,  --就诊方式（0=当面；1=远程直接沟通；2=他人代述）
+		date    DATA NOT NULL,     --就诊日期（格式：yyyymmdd）
+		status  INTEGER NOT NULL,  --状态（0=就诊完成；1=预约中；2=未赴约；3=取消）
+		updated DATETIME NOT NULL, --最后编辑时间
 		FOREIGN KEY(case_id) REFERENCES cases(id)
+	)`)
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS records --诊疗记录表（一次就诊可有多个诊疗记录）
+	(
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		session_id INTEGER NOT NULL, --就诊记录ID
+		type INTEGER NOT NULL,       --记录类型（0=主诉；1~4=望闻问切；5=辩证；6=思路；7=开方）
+		caption TEXT,                --标题
+		details TEXT,                --内容
+		updated DATETIME NOT NULL,   --最后编辑时间
+		FOREIGN KEY(session_id) REFERENCES sessions(id)
 	)`)
 }
 
