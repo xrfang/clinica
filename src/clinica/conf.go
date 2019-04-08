@@ -87,12 +87,13 @@ func (c *Configuration) initDB() {
 		contact  TEXT,              --联系方式（一般为手机号）
 		memo     TEXT               --备注
 	)`)
+	c.dbx.MustExec(`CREATE UNIQUE INDEX IF NOT EXISTS ident ON patients (name, contact)`)
 	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS cases --医案表（一病一案，一个患者可有多个一案）
 	(
 		id         INTEGER PRIMARY KEY AUTOINCREMENT,
 		patient_id INTEGER NOT NULL,  --患者ID
 		summary    TEXT,              --简述（由医生填写，而非病人主诉）
-		opened     DATA NOT NULL,     --首诊日期（格式：yyyymmdd）
+		opened     DATE NOT NULL,     --首诊日期（格式：yyyymmdd）
 		status     INTEGER NOT NULL,  --状态（0=尚未结束；1=痊愈/显效；2=失败；3=无反馈）
 		updated    DATETIME NOT NULL, --最后编辑时间
 		FOREIGN KEY(patient_id) REFERENCES patients(id)
@@ -102,7 +103,7 @@ func (c *Configuration) initDB() {
 		id      INTEGER PRIMARY KEY AUTOINCREMENT,
 		case_id INTEGER NOT NULL,  --医案ID
 		mode    INTEGER NOT NULL,  --就诊方式（0=当面；1=远程直接沟通；2=他人代述）
-		date    DATA NOT NULL,     --就诊日期（格式：yyyymmdd）
+		time    DATETIME NOT NULL, --就诊时间
 		status  INTEGER NOT NULL,  --状态（0=就诊完成；1=预约中；2=未赴约；3=取消）
 		updated DATETIME NOT NULL, --最后编辑时间
 		FOREIGN KEY(case_id) REFERENCES cases(id)
