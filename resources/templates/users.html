@@ -22,10 +22,18 @@
 <div class="container" style="margin-top:1rem;text-align:center">
     <button class="btn btn-success" style="margin:0.5rem;width:300px" onclick="editUser(this)">添加新用户</button>
     {{range .Users }}
-    <button class='btn btn-{{index . "style"}}' onclick="editUser(this)"
-        style="width:300px;margin:0.5rem;cursor:pointer" login='{{index . "login"}}' role='{{index . "role"}}'
-        user='{{index . "name"}}'>
-        {{index . "caption"}}
+    <button class='btn
+        {{if eq .Role -1}}
+            btn-secondary
+        {{else if eq .Role 0}}
+            btn-info
+        {{else if eq .Role 1}}
+            btn-primary
+        {{else}}
+            btn-danger
+        {{end}}' onclick="editUser(this)" style="width:300px;margin:0.5rem;cursor:pointer" login='{{.Login}}'
+        role='{{.Role}}' user='{{.Name.String}}'>
+        {{.Caption}}
     </button>
     {{end}}
 </div>

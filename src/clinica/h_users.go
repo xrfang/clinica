@@ -5,8 +5,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/xrfang/go-audit"
 )
 
 func users(w http.ResponseWriter, r *http.Request) {
@@ -22,35 +20,12 @@ func users(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case "GET":
-		var us []user
-		audit.Assert(cf.dbx.Select(&us, "SELECT name,login,role FROM users ORDER BY role DESC,login"))
-		var ul []map[string]string
-		for _, u := range us {
-			var style string
-			switch u.Role {
-			case RoleDisabled:
-				style = "secondary"
-			case RoleReader:
-				style = "info"
-			case RoleEditor:
-				style = "primary"
-			case RoleAdmin:
-				style = "danger"
-			}
-			ul = append(ul, map[string]string{
-				"caption": u.Caption(),
-				"name":    u.Name.String,
-				"login":   u.Login,
-				"role":    strconv.Itoa(u.Role),
-				"style":   style,
-			})
-		}
 		renderTemplate(w, "users.html", struct {
 			Admin string
-			Users []map[string]string
+			Users []user
 		}{
 			Admin: u.Caption(),
-			Users: ul,
+			Users: listUsers(),
 		})
 	case "POST":
 		login := strings.TrimSpace(r.FormValue("login"))
