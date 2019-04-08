@@ -88,7 +88,7 @@ func (c *Configuration) initDB() {
 		memo     TEXT               --备注
 	)`)
 	c.dbx.MustExec(`CREATE UNIQUE INDEX IF NOT EXISTS ident ON patients (name, contact)`)
-	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS cases --医案表（一病一案，一个患者可有多个一案）
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS cases --医案表（一病一案，一个患者可有多个医案）
 	(
 		id         INTEGER PRIMARY KEY AUTOINCREMENT,
 		patient_id INTEGER NOT NULL,  --患者ID
@@ -111,13 +111,29 @@ func (c *Configuration) initDB() {
 	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS records --诊疗记录表（一次就诊可有多个诊疗记录）
 	(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		session_id INTEGER NOT NULL, --就诊记录ID
-		type INTEGER NOT NULL,       --记录类型（0=主诉；1~4=望闻问切；5=辩证；6=思路；7=开方）
-		caption TEXT,                --标题
-		details TEXT,                --内容
-		updated DATETIME NOT NULL,   --最后编辑时间
-		FOREIGN KEY(session_id) REFERENCES sessions(id)
+		session_id INTEGER NOT NULL,  --就诊记录ID
+		type       INTEGER NOT NULL,  --记录类型（0=主诉；1=诊断；2=辩证；3=思路；4=开方）
+		class_id   INTEGER,           --子类型
+		caption    TEXT,              --标题
+		details    TEXT,              --内容
+		updated    DATETIME NOT NULL, --最后编辑时间
+		FOREIGN    KEY(session_id) REFERENCES sessions(id),
+		FOREIGN    KEY(class_id) REFERENCES classes(id)
 	)`)
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS classes --类型表
+	(
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		type_id INTEGER NOT NULL, --元类型（即records.type）
+		caption TEXT NOT NULL     --类型名称
+	)`)
+	c.dbx.MustExec(`CREATE UNIQUE INDEX IF NOT EXISTS cls ON classes (type_id, caption)`)
+	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '望诊')`)
+	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '闻声')`)
+	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '闻味')`)
+	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '问诊')`)
+	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '脉诊')`)
+	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '腹诊')`)
+	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '病灶触诊')`)
 }
 
 var cf Configuration
