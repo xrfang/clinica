@@ -83,7 +83,7 @@ func (c *Configuration) initDB() {
 		id       INTEGER PRIMARY KEY AUTOINCREMENT,
 		name     TEXT NOT NULL,     --姓名
 		gender   INTEGER NOT NULL,  --性别
-		birthday INTEGER NOT NULL,  --生日（格式：yyyymmdd）
+		birthday TEXT,              --生日（格式：yyyymmdd）
 		contact  TEXT,              --联系方式（一般为手机号）
 		memo     TEXT               --备注
 	)`)
