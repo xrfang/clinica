@@ -1,0 +1,55 @@
+{{define "body"}} {{template "header"}}
+<nav class="navbar navbar-expand navbar-dark bg-dark" style="padding: 0 4 0 4">
+    <a class="navbar-brand" href="#">&nbsp;患者管理</a>
+    <div class="collapse navbar-collapse" id="navbarMenu">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <i class="fas fa-user"></i>&nbsp;<b>{{.Editor}}</b>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="/"><i class="fas fa-book"></i>&nbsp;返回医案</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/logout"><i class="fas fa-door-open"></i>&nbsp;退出</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container" style="margin-top:1rem;text-align:center">
+    <form id="search" autocomplete="off">
+        <div class="input-group mb-2 mr-sm-2">
+            <input type="text" class="form-control" id="terms" value="{{.Query}}" placeholder="搜索患者">
+            <div class="input-group-append">
+                <div class="input-group-text" style="cursor:pointer" onclick="doSearch()"><i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+        <div>
+            <small class="form-text text-muted">显示{{.Total}}名注册患者中的{{len .Patients}}名</small>
+        </div>
+    </form>
+    <button class="btn btn-success" style="margin:0.5rem;width:300px" onclick="editUser(this)">添加新患者</button>
+    {{range .Patients }}
+    <button class="btn alert-{{if eq .Gender 0}}success{{else}}primary{{end}}" pid="{{.ID}}"
+        style="margin:0.5rem;width:300px">{{.Caption}}</button>
+    {{end}}
+</div>
+{{template "confirm"}}
+<script>
+    $(document).ready(function () {
+        $('#search #terms').keydown(function (event) {
+            if (event.keyCode == 13) {
+                event.preventDefault()
+                var terms = $('#search #terms').val()
+                location.href = "/patients?q=" + terms
+                return false
+            }
+        })
+    });
+    function doSearch() {
+        var terms = $('#search #terms').val()
+        location.href = "/patients?q=" + terms
+    }
+</script>
+{{template "footer"}} {{end}}

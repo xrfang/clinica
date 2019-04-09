@@ -19,6 +19,7 @@ type patient struct {
 	Birthday sql.NullString
 	Contact  sql.NullString
 	Memo     sql.NullString
+	Updated  sql.NullString
 }
 
 func (p patient) Caption() string {
@@ -36,49 +37,18 @@ func (p patient) Caption() string {
 	return p.Name + " (" + tag + ")"
 }
 
-func getPatients(args map[string]string, limit, offset int) (int, []patient) {
-	var cond []string
+func getPatients(term string) (int, []patient) {
 	var vals []interface{}
-	for k, v := range args {
-		switch k {
-		case "id":
-			id, _ := strconv.Atoi(v)
-			if id <= 0 {
-				return 0, nil
-			}
-			cond = append(cond, fmt.Sprintf("id=%d", id))
-		case "gender":
-			g, _ := strconv.Atoi(v)
-			if g < 0 || g > 1 {
-				return 0, nil
-			}
-			cond = append(cond, fmt.Sprint("gender=%d", g))
-		case "birthday":
-			cond = append(cond, "birthday LIKE ?%")
-			vals = append(vals, v)
-		case "name", "contact", "memo":
-			cond = append(cond, k+" LIKE %?%")
-			vals = append(vals, v)
-		default:
-			panic(fmt.Errorf("invalid argument: %s", k))
-		}
-	}
-	qry := "SELECT * FROM patients"
+	qry := "SELECT patients.*,MAX(cases.updated) AS updated FROM patients LEFT JOIN cases ON cases.patient_id=patients.id"
 	cnt := "SELECT COUNT(*) FROM patients"
-	if len(cond) > 0 {
-		where := " WHERE " + strings.Join(cond, " AND ")
-		qry += where
-		cnt += where
+	if term != "" {
+		term = "%" + term + "%"
+		qry += " WHERE name LIKE ? OR contact LIKE ? OR memo LIKE ?"
+		vals = []interface{}{term, term, term}
 	}
-	if limit <= 0 {
-		limit = 100
-	}
-	if offset < 0 {
-		offset = 0
-	}
-	qry = fmt.Sprintf("%s ORDER BY name,contact LIMIT %d OFFSET %d", qry, limit, offset)
+	qry = fmt.Sprintf("%s GROUP BY patients.id ORDER BY updated DESC,name LIMIT 100", qry)
 	var c int
-	audit.Assert(cf.dbx.Get(&c, cnt, vals...))
+	audit.Assert(cf.dbx.Get(&c, cnt))
 	var ps []patient
 	audit.Assert(cf.dbx.Select(&ps, qry, vals...))
 	return c, ps
@@ -120,7 +90,20 @@ func setPatient(args url.Values) (int, string) {
 	}
 	keys = append(keys, "memo")
 	vals = append(vals, memo)
-	//TODO 判断insert/update
+	id := arg("id")
+	var cmd string
+	if id == "" || id == "0" { //INSERT
+		cmd = fmt.Sprintf(`INSERT INTO patients (%s) VALUES (%s)`, strings.Join(keys, ","), strings.Repeat("?", len(vals)))
+	} else { //UPDATE
+		var sets []string
+		for _, k := range keys {
+			sets = append(sets, k+"=?")
+		}
+		vals = append(vals, id)
+		cmd = fmt.Sprintf(`UPDATE patients SET %s WHERE id=?`, strings.Join(sets, ","))
+	}
+	fmt.Println(cmd)
+	fmt.Println(vals)
 	//TODO: exec sql
 	return http.StatusOK, "OK"
 }

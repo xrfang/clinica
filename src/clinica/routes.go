@@ -12,4 +12,5 @@ func setupRoutes() {
 	http.HandleFunc("/chpass", chpass)
 	http.HandleFunc("/listcases", listCases)
 	http.HandleFunc("/editcase", editCase)
+	http.HandleFunc("/patients", patients)
 }
