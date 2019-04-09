@@ -1,9 +1,6 @@
 {{define "body"}} {{template "header"}}
 <nav class="navbar navbar-expand navbar-dark bg-dark" style="padding: 0 4 0 4">
   <a class="navbar-brand" href="#">&nbsp;医案</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu">
-    <span class="navbar-toggler-icon"></span>
-  </button>
   <div class="collapse navbar-collapse" id="navbarMenu">
     <ul class="navbar-nav ml-auto">
       <li class="nav-item dropdown">
@@ -13,11 +10,12 @@
         <div class="dropdown-menu dropdown-menu-right">
           {{if .IsEditor}}
           <a class="dropdown-item" href="javascript:openCase()"><i class="fas fa-edit"></i>&nbsp;新增医案</a>
+          <a class="dropdown-item" href="/patients"><i class="fas fa-address-card"></i>&nbsp;患者管理</a>
           {{end}}
-          <a class="dropdown-item" href="javascript:changePassword()"><i class="fas fa-key"></i>&nbsp;修改密码</a>
           {{if .IsAdmin}}
           <a class="dropdown-item" href="/users"><i class="fas fa-user-edit"></i>&nbsp;用户管理</a>
           {{end}}
+          <a class="dropdown-item" href="javascript:changePassword()"><i class="fas fa-key"></i>&nbsp;修改密码</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="/logout"><i class="fas fa-door-open"></i>&nbsp;退出</a>
         </div>
