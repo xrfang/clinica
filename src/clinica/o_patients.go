@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -20,6 +21,19 @@ type patient struct {
 	Contact  sql.NullString
 	Memo     sql.NullString
 	Updated  sql.NullString
+}
+
+func (p patient) String() string {
+	buf, _ := json.Marshal(map[string]interface{}{
+		"id":       p.ID,
+		"name":     p.Name,
+		"gender":   p.Gender,
+		"birthday": p.Birthday.String,
+		"contact":  p.Contact.String,
+		"memo":     p.Memo.String,
+		"updated":  p.Updated.String,
+	})
+	return string(buf)
 }
 
 func (p patient) Caption() string {

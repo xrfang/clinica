@@ -29,14 +29,92 @@
             <small class="form-text text-muted">显示{{.Total}}名注册患者中的{{len .Patients}}名</small>
         </div>
     </form>
-    <button class="btn btn-success" style="margin:0.5rem;width:300px" onclick="editUser(this)">添加新患者</button>
+    <button class="btn btn-success" style="margin:0.5rem;width:300px" onclick="editPatient(this)">添加新患者</button>
     {{range .Patients }}
-    <button class="btn alert-{{if eq .Gender 0}}success{{else}}primary{{end}}" pid="{{.ID}}"
+    <button class="btn alert-{{if eq .Gender 0}}success{{else}}primary{{end}}" onclick="editPatient(this)" pid="{{.ID}}"
         style="margin:0.5rem;width:300px">{{.Caption}}</button>
     {{end}}
 </div>
+<div class="modal" tabindex="-1" role="dialog" id="pd">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新建患者档案</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label for="name" class="col-3 col-form-label col-form-label">姓名</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="name">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="birthday" class="col-3 col-form-label col-form-label">生日</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="birthday">
+                        <small class="form-text text-muted">格式为yyyymmdd，例如20060102</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="gender" class="col-3 col-form-label col-form-label">性别</label>
+                    <div class="col-9">
+                        <select id="gender" class="form-control">
+                            <option value="0">女</option>
+                            <option value="1">男</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="contact" class="col-3 col-form-label col-form-label">联系</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="contact">
+                        <small class="form-text text-muted">联系方式一般为手机号（也用于区分同名患者）</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="memo" class="col-3 col-form-label col-form-label">备注</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="备注">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="del" class="btn btn-danger mr-auto" onclick="deleteUser()">删除</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" onclick="submitUserData()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
 {{template "confirm"}}
 <script>
+    var patients = {}
+    {{ range.Patients }}
+    patients[{{.ID}}] = JSON.parse({{.String}})
+    {{ end }}
+    function editPatient(btn) {
+        var pid = $(btn).attr("pid")
+        $('#pd #passwd').val('')
+        if (typeof (pid) == "undefined") {
+            $('#pd .modal-title').text('新建患者档案')
+            $('#pd #name').val('')
+            $('#pd #birthday').val('')
+            $('#pd #contact').val('')
+            $('#pd #memo').val('')
+            $('#pd #gender').val(0)
+            $('#pd #del').css("display", "none")
+        } else {
+            var p = patients[pid]
+            $('#pd .modal-title').text('编辑患者档案')
+            $('#pd #name').val(p.name)
+            $('#pd #birthday').val(p.birthday)
+            $('#pd #contact').val(p.contact)
+            $('#pd #memo').val(p.memo)
+            $('#pd #del').css("display", "")
+            $('#pd #gender').val(p.gender)
+        }
+        $('#pd').modal()
+    }
     $(document).ready(function () {
         $('#search #terms').keydown(function (event) {
             if (event.keyCode == 13) {
