@@ -122,7 +122,7 @@ func setPatient(args url.Values) (int, string) {
 	return http.StatusOK, "OK"
 }
 
-func delPatient(id int) (int, string) {
+func delPatient(id string) (int, string) {
 	_, err := cf.dbx.Exec(`DELETE FROM patients WHERE id=?`, id)
 	if err == nil {
 		return http.StatusOK, "OK"

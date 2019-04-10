@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"net/http"
 	"regexp"
 	"strings"
@@ -46,15 +47,20 @@ func patients(w http.ResponseWriter, r *http.Request) {
 		})
 	case "POST":
 		r.ParseForm()
-		code, mesg := setUser(r.Form)
+		code, mesg := setPatient(r.Form)
 		http.Error(w, mesg, code)
 	case "DELETE":
-		login := r.URL.Query().Get("login")
-		if login == u.Login {
-			http.Error(w, "不能删除当前用户", http.StatusForbidden)
+		id := r.URL.Query().Get("id")
+		var caseID int
+		err := cf.dbx.Get(&caseID, `SELECT id FROM cases WHERE patient_id=?`, id)
+		if err == nil {
+			http.Error(w, "该患者有医案不能删除", http.StatusForbidden)
 			return
 		}
-		code, mesg := delUser(login)
-		http.Error(w, mesg, code)
+		if err == sql.ErrNoRows {
+			code, mesg := delPatient(id)
+			http.Error(w, mesg, code)
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
