@@ -60,7 +60,12 @@ func getPatients(term string) (int, []patient) {
 		qry += " WHERE name LIKE ? OR contact LIKE ? OR memo LIKE ?"
 		vals = []interface{}{term, term, term}
 	}
-	qry = fmt.Sprintf("%s GROUP BY patients.id ORDER BY updated DESC,name LIMIT 100", qry)
+	qry += ` GROUP BY patients.id `
+	if term == "" {
+		qry += `ORDER BY updated DESC,id DESC LIMIT 100`
+	} else {
+		qry += `ORDER BY updated DESC,name LIMIT 100`
+	}
 	var c int
 	audit.Assert(cf.dbx.Get(&c, cnt))
 	var ps []patient
@@ -107,7 +112,8 @@ func setPatient(args url.Values) (int, string) {
 	id := arg("id")
 	var cmd string
 	if id == "" || id == "0" { //INSERT
-		cmd = fmt.Sprintf(`INSERT INTO patients (%s) VALUES (%s)`, strings.Join(keys, ","), strings.Repeat("?", len(vals)))
+		cmd = `INSERT INTO patients (` + strings.Join(keys, ",") + `) VALUES (?` + strings.Repeat(",?",
+			len(vals)-1) + `)`
 	} else { //UPDATE
 		var sets []string
 		for _, k := range keys {
@@ -116,10 +122,11 @@ func setPatient(args url.Values) (int, string) {
 		vals = append(vals, id)
 		cmd = fmt.Sprintf(`UPDATE patients SET %s WHERE id=?`, strings.Join(sets, ","))
 	}
-	fmt.Println(cmd)
-	fmt.Println(vals)
-	//TODO: exec sql
-	return http.StatusOK, "OK"
+	_, err := cf.dbx.Exec(cmd, vals...)
+	if err == nil {
+		return http.StatusOK, "OK"
+	}
+	return http.StatusInternalServerError, err.Error()
 }
 
 func delPatient(id string) (int, string) {

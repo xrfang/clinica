@@ -60,6 +60,7 @@ func patients(w http.ResponseWriter, r *http.Request) {
 		if err == sql.ErrNoRows {
 			code, mesg := delPatient(id)
 			http.Error(w, mesg, code)
+			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

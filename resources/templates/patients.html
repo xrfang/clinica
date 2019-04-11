@@ -36,6 +36,7 @@
     {{end}}
 </div>
 <div class="modal" tabindex="-1" role="dialog" id="pd">
+    <input type="hidden" id="pid" />
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -74,14 +75,14 @@
                 <div class="form-group row">
                     <label for="memo" class="col-3 col-form-label col-form-label">备注</label>
                     <div class="col-9">
-                        <input type="text" class="form-control" id="备注">
+                        <input type="text" class="form-control" id="memo">
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="del" class="btn btn-danger mr-auto" onclick="deleteUser()">删除</button>
+                <button type="button" id="del" class="btn btn-danger mr-auto" onclick="deletePatient()">删除</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-success" onclick="submitUserData()">保存</button>
+                <button type="button" class="btn btn-success" onclick="submitPatientData()">保存</button>
             </div>
         </div>
     </div>
@@ -106,15 +107,41 @@
         } else {
             var p = patients[pid]
             $('#pd .modal-title').text('编辑患者档案')
+            $('#pd #pid').val(pid)
             $('#pd #name').val(p.name)
             $('#pd #birthday').val(p.birthday)
             $('#pd #contact').val(p.contact)
             $('#pd #memo').val(p.memo)
-            $('#pd #del').css("display", "")
             $('#pd #gender').val(p.gender)
+            $('#pd #del').css("display", "")            
         }
         $('#pd').modal()
     }
+    function submitPatientData() {
+        var data = {}
+        data.id = $('#pd #pid').val()
+        data.name = $('#pd #name').val()
+        data.birthday = $('#pd #birthday').val()
+        data.contact = $('#pd #contact').val()
+        data.memo = $('#pd #memo').val()
+        data.gender = $('#pd #gender').val()
+        $.post("/patients", data, function () {
+            location.reload(true)
+        })
+    }
+    function deletePatient() {
+        var pid = $('#pd #pid').val()
+        var p = patients[pid]
+        confirm("请确认", `您将要删除患者【${p.name}】...`, function () {
+            $.ajax({
+                url: "/patients?id=" + pid,
+                method: "DELETE",
+                success: function () {
+                    location.reload(true)
+                }
+            })
+        })
+    }    
     $(document).ready(function () {
         $('#search #terms').keydown(function (event) {
             if (event.keyCode == 13) {
