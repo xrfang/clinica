@@ -85,14 +85,25 @@
     $.get("/listcases", null, function (ret) {
       $("#cases").empty()
       $.each(ret, function (i, c) {
-        var bg = (i % 2 == 1) ? "#f0f0f0" : "white"
+        switch (c.status) {
+          case 0: //尚未结束
+            var bg = "primary"
+            break
+          case 1: //痊愈/显效
+            var bg = "success"
+            break            
+          case 2: //失败
+            var bg = "danger"
+            break
+          case 3: //无反馈
+            var bg = "secondary"
+        }
+        var opened = c.opened.substr(0, 10)
         $('#cases').append(`
-<div class="card" style="margin-bottom:0.5rem;background:${bg}">
-  <div class="card-body">
-    <div class="card-title" style="display:inline-block;font-weight:bold">${c.name} ${c.gender} ${c.age}岁</div>
-    <div style="display:inline-block" class="float-right">首诊：${c.date}</div>
-    <p class="card-text">${c.summary}</p>
-  </div>
+<div class="alert alert-${bg}" style="padding:0.6rem;margin-bottom:0.5rem">
+  <div style="display:inline-block;font-weight:bold;width:70px">${c.patient}</div>
+  <div style="display:inline-block">${c.summary}</div>
+  <div style="display:inline-block;float:right">${opened}</div>
 </div>        
         `)
         console.log(c)
