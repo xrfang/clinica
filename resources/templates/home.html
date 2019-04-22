@@ -71,7 +71,7 @@
 <script>
   function openCase(id) {
     var uri = "/editcase"
-    if (typeof (id) != "undefined") urk += `?id=${id}`
+    if (typeof (id) != "undefined") uri += `?id=${id}`
     var child = window.open(uri)
     var timer = setInterval(checkChild, 500);
     function checkChild() {
@@ -100,7 +100,7 @@
         }
         var opened = c.opened.substr(0, 10)
         $('#cases').append(`
-<div class="alert alert-${bg}" style="padding:0.6rem;margin-bottom:0.5rem">
+<div class="alert alert-${bg}" onclick="openCase('${c.id}')" style="cursor:pointer;padding:0.6rem;margin-bottom:0.5rem">
   <div style="display:inline-block;font-weight:bold;width:70px;vertical-align:top">${c.patient}</div>
   <div style="display:inline-block;max-width:300px;vertical-align:top">${c.summary}</div>
   <div style="display:inline-block;float:right;vertical-align:top">${opened}</div>

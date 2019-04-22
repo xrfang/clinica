@@ -13,6 +13,10 @@ func editCase(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "您没有编辑医案的权限", http.StatusForbidden)
 		return
 	}
+	id := r.URL.Query().Get("id")
+	if id != "" {
+
+	}
 	renderTemplate(w, "edit.html", struct {
 		Caption string
 	}{
