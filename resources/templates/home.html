@@ -1,4 +1,17 @@
 {{define "body"}} {{template "header"}}
+<style>
+  @media (max-width: 767px) {
+    .landscape {
+      display: none
+    }
+  }
+
+  @media (min-width: 768px) {
+    .portrait {
+      display: none
+    }
+  }
+</style>
 <nav class="navbar navbar-expand navbar-dark bg-dark" style="padding: 0 4 0 4">
   <a class="navbar-brand" href="#">&nbsp;医案</a>
   <div class="collapse navbar-collapse" id="navbarMenu">
@@ -91,7 +104,7 @@
             break
           case 1: //痊愈/显效
             var bg = "success"
-            break            
+            break
           case 2: //失败
             var bg = "danger"
             break
@@ -100,13 +113,21 @@
         }
         var opened = c.opened.substr(0, 10)
         $('#cases').append(`
-<div class="alert alert-${bg}" onclick="openCase('${c.id}')" style="cursor:pointer;padding:0.6rem;margin-bottom:0.5rem">
-  <div style="display:inline-block;font-weight:bold;width:70px;vertical-align:top">${c.patient}</div>
-  <div style="display:inline-block;max-width:300px;vertical-align:top">${c.summary}</div>
+<div class="portrait alert alert-${bg}" onclick="openCase('${c.id}')" 
+  style="cursor:pointer;padding:0.6rem;margin-bottom:0.5rem">
+  <div style="display:flex;margin-bottom:0.3rem">
+    <div class="col" style="padding:0;font-weight:bold">${c.patient}</div>
+    <div class="col" style="padding:0;text-align:right">${opened}</div>
+  </div>
+  <div>${c.summary}</div>
+</div>
+<div class="landscape alert alert-${bg}" onclick="openCase('${c.id}')" 
+  style="cursor:pointer;padding:0.6rem;margin-bottom:0.5rem">
+  <div style="display:inline-block;font-weight:bold;width:80px;vertical-align:top">${c.patient}</div>
+  <div style="display:inline-block;max-width:500;vertical-align:top">${c.summary}</div>
   <div style="display:inline-block;float:right;vertical-align:top">${opened}</div>
 </div>        
         `)
-        console.log(c)
       })
     }, "JSON")
   }
