@@ -20,7 +20,7 @@ func getCases() ([]caseBrief, error) {
 	return cbs, err
 }
 
-type session struct {
+type consult struct {
 	ID      int       `json:"id"`
 	CaseID  int       `json:"case_id"`
 	Mode    int       `json:"mode"`

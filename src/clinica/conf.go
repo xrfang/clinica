@@ -82,7 +82,7 @@ func (c *Configuration) initDB() {
 	(
 		id       INTEGER PRIMARY KEY AUTOINCREMENT,
 		name     TEXT NOT NULL,     --姓名
-		gender   INTEGER NOT NULL,  --性别
+		gender   INTEGER NOT NULL,  --性别（0=女性；1=男性）
 		birthday TEXT,              --生日（格式：yyyymmdd）
 		contact  TEXT,              --联系方式（一般为手机号）
 		memo     TEXT               --备注
@@ -98,7 +98,7 @@ func (c *Configuration) initDB() {
 		updated    DATETIME NOT NULL, --最后编辑时间
 		FOREIGN KEY(patient_id) REFERENCES patients(id)
 	)`)
-	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS sessions -- 就诊记录表（一个医案可有多个就诊记录）
+	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS consults -- 就诊记录表（一个医案可有多个就诊记录）
 	(
 		id      INTEGER PRIMARY KEY AUTOINCREMENT,
 		case_id INTEGER NOT NULL,  --医案ID
@@ -111,13 +111,13 @@ func (c *Configuration) initDB() {
 	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS records --诊疗记录表（一次就诊可有多个诊疗记录）
 	(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		session_id INTEGER NOT NULL,  --就诊记录ID
+		consult_id INTEGER NOT NULL,  --就诊记录ID
 		type       INTEGER NOT NULL,  --记录类型（0=主诉；1=诊断；2=辩证；3=思路；4=开方）
 		class_id   INTEGER,           --子类型
 		caption    TEXT,              --标题
 		details    TEXT,              --内容
 		updated    DATETIME NOT NULL, --最后编辑时间
-		FOREIGN    KEY(session_id) REFERENCES sessions(id),
+		FOREIGN    KEY(consult_id) REFERENCES consults(id),
 		FOREIGN    KEY(class_id) REFERENCES classes(id)
 	)`)
 	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS classes --类型表
