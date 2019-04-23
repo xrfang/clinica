@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+	"strconv"
+)
 
 func editCase(w http.ResponseWriter, r *http.Request) {
 	s := sessions.Get(w, r)
@@ -13,13 +16,38 @@ func editCase(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "您没有编辑医案的权限", http.StatusForbidden)
 		return
 	}
-	id := r.URL.Query().Get("id")
-	if id != "" {
-
+	var consults []consult
+	var patient string
+	cid := r.URL.Query().Get("id")
+	if cid != "" {
+		id, _ := strconv.Atoi(cid)
+		if id <= 0 {
+			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		}
+		c, err := getCases(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if len(c) == 0 {
+			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		}
+		patient = c[0].PatientName
+		consults, err = getConsults(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 	renderTemplate(w, "edit.html", struct {
-		Caption string
+		Caption  string
+		Patient  string
+		Consults []consult
 	}{
-		Caption: u.Caption(),
+		Caption:  u.Caption(),
+		Patient:  patient,
+		Consults: consults,
 	})
 }

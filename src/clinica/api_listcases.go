@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 func listCases(w http.ResponseWriter, r *http.Request) {
@@ -17,7 +18,16 @@ func listCases(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	cbs, err := getCases()
+	id := 0
+	caseID := r.URL.Query().Get("id")
+	if caseID != "" {
+		id, _ = strconv.Atoi(caseID)
+		if id == 0 {
+			http.Error(w, "case-id (if given) must be postive integer", http.StatusBadRequest)
+			return
+		}
+	}
+	cbs, err := getCases(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
