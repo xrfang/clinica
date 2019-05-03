@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -68,6 +69,16 @@ func (c *Configuration) initDB() {
 	dsn := fmt.Sprintf("file:%s?cache=shared", c.DBPath)
 	c.dbx = sqlx.MustConnect("sqlite3", dsn)
 	c.dbx.SetMaxOpenConns(1)
+	c.dbx.MapperFunc(func(s string) string {
+		sc := string(s[0])
+		for i := 1; i < len(s); i++ {
+			if s[i-1] >= 'a' && s[i-1] <= 'z' && s[i] >= 'A' && s[i] <= 'Z' {
+				sc += "_"
+			}
+			sc += string(s[i])
+		}
+		return strings.ToLower(sc)
+	})
 	c.dbx.MustExec(`CREATE TABLE IF NOT EXISTS users --本系统用户表
 	( 
 		login  TEXT NOT NULL,    --登录用户名
@@ -127,13 +138,6 @@ func (c *Configuration) initDB() {
 		caption TEXT NOT NULL     --类型名称
 	)`)
 	c.dbx.MustExec(`CREATE UNIQUE INDEX IF NOT EXISTS cls ON classes (type_id, caption)`)
-	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '望诊')`)
-	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '闻声')`)
-	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '闻味')`)
-	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '问诊')`)
-	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '脉诊')`)
-	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '腹诊')`)
-	c.dbx.Exec(`INSERT INTO classes (type_id,caption) VALUES (1, '病灶触诊')`)
 }
 
 var cf Configuration
@@ -149,4 +153,33 @@ func loadConfig(fn string) {
 		os.Exit(1)
 	}
 	cf.initDB()
+}
+
+type classRef map[interface{}]interface{}
+
+func (cr classRef) String(typeID, classID int) string {
+	cls := cr[typeID]
+	if cls == nil {
+		return cr["type"].(map[int]string)[typeID]
+	}
+	return cls.(map[int]string)[classID]
+}
+
+var cref = classRef{
+	"type": map[int]string{ //记录类型
+		0: "主诉",
+		1: "诊断",
+		2: "辩证",
+		3: "思路",
+		4: "开方",
+	},
+	1: map[int]string{ //诊断类型
+		0: "望诊",
+		1: "闻声",
+		2: "闻味",
+		3: "问诊",
+		4: "脉诊",
+		5: "腹诊",
+		6: "病灶触诊",
+	},
 }

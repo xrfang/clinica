@@ -13,63 +13,58 @@
 </nav>
 <div class="container" style="margin-top:1rem">
     <div class="accordion" id="portfolio">
-        <div class="alert alert-primary">{{.Patient}}</div>
-        <div class="card">
-            <div class="card-header" style="padding:0" id="h_basic">
-                <!-- <h2 class="mb-0"> -->
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#c_basic"
-                        style="display:inline-block">
-                        基本信息
-                    </button>
-                <!-- </h2> -->
-                <button class="btn btn-success btn-sm" style="display:inline-block;margin:3.5 5 0 0;float:right">保存</button>
-            </div>
-            <div id="c_basic" class="collapse show" data-parent="#portfolio">
-                <div class="card-body" style="padding-bottom:0">
-                    <form autocomplete="off" id="info">
-                        <div class="row">
-                            <div class="col-8 col-md-4 form-group">
-                                <label for="name">患者姓名</label>
-                                <input type="text" class="form-control form-control-sm" id="name">
-                            </div>
-                            <div class="col-4 col-md-2 form-group">
-                                <label for="age">年龄</label>
-                                <input type="text" class="form-control form-control-sm" id="age">
-                            </div>
-                            <div class="col-8 col-md-4 form-group">
-                                <label for="contact">联系方式</label>
-                                <input type="text" class="form-control form-control-sm" id="contact">
-                            </div>
-                            <div class="col-4 col-md-2 form-group">
-                                <label for="gender">性别</label>
-                                <select class="form-control form-control-sm" id="gender">
-                                    <option value="0">--</option>
-                                    <option value="1">女</option>
-                                    <option value="2">男</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-12 form-group">
-                                <label for="comment">备注</label>
-                                <input type="text" class="form-control form-control-sm" id="comment">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <div class="alert alert-primary" style="padding:0.5rem 0.6rem 0.5rem 0.5rem">
+           <b>[<span id="patient_name"></span>]</b>&nbsp;<span id="summary"></span>
+           &nbsp;<a class="fas fa-edit"></a>
         </div>
-        <div class="card"></div>
+        <div id="consults"></div>
     </div>
 </div>
 </form>
 </div>
-<div class="bg-dark fixed-bottom" style="text-align:center">
-    <button class="btn btn-sm btn-light" style="margin:5 1 5 1">诉</button>
-    <button class="btn btn-sm btn-light" style="margin:5 1 5 1">望</button>
-    <button class="btn btn-sm btn-light" style="margin:5 1 5 1">闻</button>
-    <button class="btn btn-sm btn-light" style="margin:5 1 5 1">问</button>
-    <button class="btn btn-sm btn-light" style="margin:5 1 5 1">切</button>
-    <button class="btn btn-sm btn-light" style="margin:5 1 5 1">思</button>
-    <button class="btn btn-sm btn-light" style="margin:5 1 5 1">辨</button>
-    <button class="btn btn-sm btn-light" style="margin:5 1 5 1">方</button>
-</div>
+<script>
+    var consults = JSON.parse(`{{.Case}}`)
+    console.log(consults)
+    $(function () {
+        $('#patient_name').text(consults.patient_name)
+        $('#summary').text(consults.summary)
+        $.each(consults.consult, function (i, c) {
+            var d = new Date(Date.parse(c.time))
+            var card = `
+<div class="card">
+  <div class="card-header" style="padding:0" id="h_${c.id}">
+    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#c_${c.id}" style="display:inline-block">
+      ${d.toLocaleDateString()}
+    </button>
+    <div class="dropdown" style="display:inline-block;float:right">
+      <i class="fas fa-ellipsis-v" data-toggle="dropdown" style="padding:0.7rem 0.7rem"></i>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item" href="#">编辑【主诉】</a>
+        <a class="dropdown-item" href="#">编辑【诊断】</a>
+        <a class="dropdown-item" href="#">编辑【辩证】</a>
+        <a class="dropdown-item" href="#">编辑【思路】</a>
+        <a class="dropdown-item" href="#">编辑【开方】</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">编辑就诊记录</a>
+      </div>
+    </div>
+  </div>
+  <div id="c_${c.id}" class="collapse" data-parent="#portfolio">
+    <div class="card-body">`
+            $.each(c.records, function (i, r) {
+                card += `
+      <div style="margin-bottom:0.3rem">
+        <a data-toggle="collapse" style="font-weight:bold" href="#rec_${r.id}">[${r.category}]</a>
+        &nbsp;${r.caption}&nbsp;&nbsp;<a class="fas fa-edit"></a>
+      </div>
+      <div style="margin-bottom:1rem;" id="rec_${r.id}" class="collapse">${r.details}</div>`
+            })
+            card += `
+    </div>
+  </div>
+</div>`
+            $('#consults').append(card)
+        })
+    })
+</script>
 {{template "footer"}} {{end}}
