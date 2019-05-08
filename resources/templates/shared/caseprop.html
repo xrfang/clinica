@@ -1,0 +1,62 @@
+{{define "caseprop"}}
+<div class="modal fade" id="caseprop" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="patientName"></h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="summary">概述</label>
+                        <div> <input type="text" class="form-control" id="summary" /> </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            <label for="opened">首诊日期</label>
+                            <input type="text" class="form-control" id="opened" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="status">状态</label>
+                            <select class="form-control" id="status">
+                                <option value="0">尚未结束</option>
+                                <option value="1">痊愈/显效</option>
+                                <option value="2">失败</option>
+                                <option value="3">无反馈</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function editCaseProp(c) {
+        var actionConfirmed = false
+        var t = new Date(Date.parse(c.opened))
+        $('#caseprop #patientName').text(c.patient_name)
+        $('#caseprop #summary').val(c.summary)
+        $('#caseprop #opened').val(t.toLocaleDateString())
+        // $('#cfmTitle').text(title)
+        // $('#cfmMesg').text(message)
+        // $('#cfmDialog').on('hide.bs.modal', function () {
+        //     var elm = $(document.activeElement);
+        //     if (elm.hasClass('btn-success')) {
+        //         actionConfirmed = true
+        //     }
+        //     $('#cfmDialog').off('hide.bs.modal')
+        // })
+        // $('#cfmDialog').on('hidden.bs.modal', function () {
+        //     if (actionConfirmed) action()
+        //     $('#cfmDialog').off('hidden.bs.modal')
+        // })
+        $('#caseprop').modal()
+    }
+</script>
+{{end}}

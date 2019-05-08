@@ -15,7 +15,7 @@
     <div class="accordion" id="portfolio">
         <div class="alert alert-primary" style="padding:0.5rem 0.6rem 0.5rem 0.5rem">
            <b>[<span id="patient_name"></span>]</b>&nbsp;<span id="summary"></span>
-           &nbsp;<a class="fas fa-edit"></a>
+           &nbsp;<a class="fas fa-edit" href="javascript:editCaseProp(consults)"></a>
         </div>
         <div id="consults"></div>
     </div>
@@ -67,4 +67,5 @@
         })
     })
 </script>
+{{template "caseprop"}}
 {{template "footer"}} {{end}}
