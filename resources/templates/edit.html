@@ -30,12 +30,11 @@
         $('#patient_name').text(consults.patient_name)
         $('#summary').text(consults.summary)
         $.each(consults.consult, function (i, c) {
-            var d = new Date(Date.parse(c.time))
             var card = `
 <div class="card">
   <div class="card-header" style="padding:0" id="h_${c.id}">
     <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#c_${c.id}" style="display:inline-block">
-      ${d.toLocaleDateString()}
+      ${parseDate(c.time)}
     </button>
     <div class="dropdown" style="display:inline-block;float:right">
       <i class="fas fa-ellipsis-v" data-toggle="dropdown" style="padding:0.7rem 0.7rem"></i>

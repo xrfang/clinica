@@ -41,3 +41,12 @@ function caseBgColor(status) {
             return "secondary"
     }
 }
+
+function parseDate(date) {
+    var r = /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/
+    var m = r.exec(date)
+    if (m == null) {
+        return ""
+    }
+    return `${m[1]}-${m[2].padStart(2, 0)}-${m[3].padStart(2, 0)}`
+}
