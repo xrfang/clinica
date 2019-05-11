@@ -1,0 +1,65 @@
+{{define "consultprop"}}
+<div class="modal fade" id="consultprop" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">就诊记录</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="consult_id" />
+                    <div class="form-group">
+                        <label for="opened">就诊时间</label>
+                        <input type="text" class="form-control" id="time" />
+                    </div>
+                    <div class="form-group">
+                        <label for="summary">就诊方式</label>
+                        <select class="form-control" id="mode">
+                            <option value="0">当面</option>
+                            <option value="1">远程直接沟通</option>
+                            <option value="2">他人代述</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">状态</label>
+                        <select class="form-control" id="status">
+                            <option value="0">就诊完成</option>
+                            <option value="1">预约中</option>
+                            <option value="2">未赴约</option>
+                            <option value="3">取消</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function editConsultProp(c) {
+        $('#consultprop #consult_id').val(c.id)
+        $('#consultprop #summary').val(c.summary)
+        $('#consultprop #time').val(fmtDateTime(c.opened, "Y-m-d H:i"))
+        $('#consultprop #status').val(c.status)
+        $('#consultprop').on('hide.bs.modal', function () {
+            var elm = $(document.activeElement);
+            if (elm.hasClass('btn-success')) {
+                // var props = {}
+                // props["id"] = $('#caseprop #case_id').val()
+                // props["summary"] = $('#caseprop #summary').val()
+                // props["opened"] = fmtDateTime($('#caseprop #opened').val(), "Y-m-d H:i")
+                // props["status"] = $('#caseprop #status').val()
+                // $.post('/api/editcase', props, function () {
+                //     location.reload()
+                // })
+            }
+            $('#consultprop').off('hide.bs.modal')
+        })
+        $('#consultprop').modal()
+    }
+</script>
+{{end}}

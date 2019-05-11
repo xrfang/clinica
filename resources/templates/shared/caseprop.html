@@ -42,7 +42,7 @@
         $('#caseprop #case_id').val(c.id)
         $('#caseprop #patientName').text(c.patient_name)
         $('#caseprop #summary').val(c.summary)
-        $('#caseprop #opened').val(parseDate(c.opened))
+        $('#caseprop #opened').val(fmtDateTime(c.opened, "Y-m-d"))
         $('#caseprop #status').val(c.status)
         $('#caseprop').on('hide.bs.modal', function () {
             var elm = $(document.activeElement);
@@ -50,7 +50,7 @@
                 var props = {}
                 props["id"] = $('#caseprop #case_id').val()
                 props["summary"] = $('#caseprop #summary').val()
-                props["opened"] = parseDate($('#caseprop #opened').val())
+                props["opened"] = fmtDateTime($('#caseprop #opened').val(), "Y-m-d")
                 props["status"] = $('#caseprop #status').val()
                 $.post('/api/editcase', props, function () {
                     location.reload()

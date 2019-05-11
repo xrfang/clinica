@@ -42,11 +42,35 @@ function caseBgColor(status) {
     }
 }
 
-function parseDate(date) {
-    var r = /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/
-    var m = r.exec(date)
-    if (m == null) {
-        return ""
+function consultBgColor(status) {
+    switch (parseInt(status)) {
+        case 0: //就诊完成
+            return "#d4edda" //success
+        case 1: //预约中
+            return "#cce5ff" //primary
+        case 2: //未赴约
+            return "#f8d7da" //danger
+        case 3: //取消
+            return "#e2e3e5" //secondary
     }
-    return `${m[1]}-${m[2].padStart(2, 0)}-${m[3].padStart(2, 0)}`
+}
+
+function fmtDateTime(time, layout) {
+    var ds = [...time.matchAll(/\d+/g)]
+    if (ds.length < 3) return ""
+    var p = function(idx) {
+        var s = ds[idx][0]
+        return (idx > 0) ? s.padStart(2, 0) : s
+    }
+    var s = layout.replace("Y", p(0)).replace("m", p(1)).replace("d", p(2))
+    if (ds.length > 3) {
+        s = s.replace("H", p(3))
+    }
+    if (ds.length > 4) {
+        s = s.replace("i", p(4))
+    }
+    if (ds.length > 5) {
+        s = s.replace("s", p(5))
+    }
+    return s
 }
