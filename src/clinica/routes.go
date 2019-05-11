@@ -10,7 +10,8 @@ func setupRoutes() {
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/users", users)
 	http.HandleFunc("/chpass", chpass)
-	http.HandleFunc("/listcases", listCases)
+	http.HandleFunc("/api/listcases", apiListCases)
+	http.HandleFunc("/api/editcase", apiEditCase)
 	http.HandleFunc("/editcase", editCase)
 	http.HandleFunc("/patients", patients)
 }

@@ -8,6 +8,7 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <input type="hidden" id="case_id" />
                     <div class="form-group">
                         <label for="summary">概述</label>
                         <div> <input type="text" class="form-control" id="summary" /> </div>
@@ -37,25 +38,34 @@
     </div>
 </div>
 <script>
+    function parseDate(date) {
+        var r = /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/
+        var m = r.exec(date)
+        if (m == null) {
+            return ""
+        }
+        return `${m[1]}-${m[2].padStart(2, 0)}-${m[3].padStart(2, 0)}`
+    }
     function editCaseProp(c) {
-        var actionConfirmed = false
-        var t = new Date(Date.parse(c.opened))
+        $('#caseprop #case_id').val(c.id)
         $('#caseprop #patientName').text(c.patient_name)
         $('#caseprop #summary').val(c.summary)
-        $('#caseprop #opened').val(t.toLocaleDateString())
-        // $('#cfmTitle').text(title)
-        // $('#cfmMesg').text(message)
-        // $('#cfmDialog').on('hide.bs.modal', function () {
-        //     var elm = $(document.activeElement);
-        //     if (elm.hasClass('btn-success')) {
-        //         actionConfirmed = true
-        //     }
-        //     $('#cfmDialog').off('hide.bs.modal')
-        // })
-        // $('#cfmDialog').on('hidden.bs.modal', function () {
-        //     if (actionConfirmed) action()
-        //     $('#cfmDialog').off('hidden.bs.modal')
-        // })
+        $('#caseprop #opened').val(parseDate(c.opened))
+        $('#caseprop #status').val(c.status)
+        $('#caseprop').on('hide.bs.modal', function () {
+            var elm = $(document.activeElement);
+            if (elm.hasClass('btn-success')) {
+                var props = {}
+                props["id"] = $('#caseprop #case_id').val()
+                props["summary"] = $('#caseprop #summary').val()
+                props["opened"] = parseDate($('#caseprop #opened').val())
+                props["status"] = $('#caseprop #status').val()
+                $.post('/api/editcase', props, function () {
+                    location.reload()
+                })
+            }
+            $('#caseprop').off('hide.bs.modal')
+        })
         $('#caseprop').modal()
     }
 </script>

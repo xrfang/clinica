@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func listCases(w http.ResponseWriter, r *http.Request) {
+func apiListCases(w http.ResponseWriter, r *http.Request) {
 	s := sessions.Get(w, r)
 	var u user
 	if s.Unmarshal("user", &u) != nil {

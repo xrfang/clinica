@@ -13,7 +13,7 @@
 </nav>
 <div class="container" style="margin-top:1rem">
     <div class="accordion" id="portfolio">
-        <div class="alert alert-primary" style="padding:0.5rem 0.6rem 0.5rem 0.5rem">
+        <div id="info" style="padding:0.5rem 0.6rem 0.5rem 0.5rem">
            <b>[<span id="patient_name"></span>]</b>&nbsp;<span id="summary"></span>
            &nbsp;<a class="fas fa-edit" href="javascript:editCaseProp(consults)"></a>
         </div>
@@ -26,6 +26,7 @@
     var consults = JSON.parse(`{{.Case}}`)
     console.log(consults)
     $(function () {
+        $('#info').addClass("alert alert-" + caseBgColor(consults.status))
         $('#patient_name').text(consults.patient_name)
         $('#summary').text(consults.summary)
         $.each(consults.consult, function (i, c) {

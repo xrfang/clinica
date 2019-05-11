@@ -95,22 +95,10 @@
     }
   }
   function getCases() {
-    $.get("/listcases", null, function (ret) {
+    $.get("/api/listcases", null, function (ret) {
       $("#cases").empty()
       $.each(ret, function (i, c) {
-        switch (c.status) {
-          case 0: //尚未结束
-            var bg = "primary"
-            break
-          case 1: //痊愈/显效
-            var bg = "success"
-            break
-          case 2: //失败
-            var bg = "danger"
-            break
-          case 3: //无反馈
-            var bg = "secondary"
-        }
+        var bg = caseBgColor(c.status)
         var opened = c.opened.substr(0, 10)
         $('#cases').append(`
 <div class="portrait alert alert-${bg}" onclick="openCase('${c.id}')" 
