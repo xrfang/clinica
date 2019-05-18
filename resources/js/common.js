@@ -58,19 +58,13 @@ function consultBgColor(status) {
 function fmtDateTime(time, layout) {
     var ds = [...time.matchAll(/\d+/g)]
     if (ds.length < 3) return ""
-    var p = function(idx) {
+    var p = function (idx) {
         var s = ds[idx][0]
         return (idx > 0) ? s.padStart(2, 0) : s
     }
     var s = layout.replace("Y", p(0)).replace("m", p(1)).replace("d", p(2))
-    if (ds.length > 3) {
-        s = s.replace("H", p(3))
-    }
-    if (ds.length > 4) {
-        s = s.replace("i", p(4))
-    }
-    if (ds.length > 5) {
-        s = s.replace("s", p(5))
-    }
+    s = ds.length > 3 ? s.replace("H", p(3)) : s.replace("H", "00")
+    s = ds.length > 4 ? s.replace("i", p(4)) : s.replace("i", "00")
+    s = ds.length > 5 ? s.replace("s", p(5)) : s.replace("s", "00")
     return s
 }

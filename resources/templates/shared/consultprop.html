@@ -42,17 +42,18 @@
 <script>
     function editConsultProp(c) {
         $('#consultprop #consult_id').val(c.id)
-        $('#consultprop #summary').val(c.summary)
-        $('#consultprop #time').val(fmtDateTime(c.opened, "Y-m-d H:i"))
+        $('#consultprop #time').val(fmtDateTime(c.time, "Y-m-d H:i"))
+        $('#consultprop #mode').val(c.mode)
         $('#consultprop #status').val(c.status)
         $('#consultprop').on('hide.bs.modal', function () {
             var elm = $(document.activeElement);
             if (elm.hasClass('btn-success')) {
-                // var props = {}
-                // props["id"] = $('#caseprop #case_id').val()
-                // props["summary"] = $('#caseprop #summary').val()
-                // props["opened"] = fmtDateTime($('#caseprop #opened').val(), "Y-m-d H:i")
-                // props["status"] = $('#caseprop #status').val()
+                var props = {}
+                props["id"] = $('#consultprop #consult_id').val()
+                props["time"] = fmtDateTime($('#consultprop #time').val(), "Y-m-d H:i")
+                props["mode"] = $('#consultprop #mode').val()
+                props["status"] = $('#consultprop #status').val()
+                console.log(props)
                 // $.post('/api/editcase', props, function () {
                 //     location.reload()
                 // })

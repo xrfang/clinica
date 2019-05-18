@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func apiEditCase(w http.ResponseWriter, r *http.Request) {
+func apiEditConsult(w http.ResponseWriter, r *http.Request) {
 	s := sessions.Get(w, r)
 	var u user
 	if s.Unmarshal("user", &u) != nil {
@@ -21,19 +21,19 @@ func apiEditCase(w http.ResponseWriter, r *http.Request) {
 	var args []interface{}
 	var props []string
 
-	summary := r.PostFormValue("summary")
-	args = append(args, summary)
-	props = append(props, "summary=?")
+	mode := r.PostFormValue("mode")
+	args = append(args, mode)
+	props = append(props, "mode=?")
 
 	status := r.PostFormValue("status")
 	args = append(args, status)
 	props = append(props, "status=?")
 
-	opened := r.PostFormValue("opened")
-	opened, err := fmtDateTime(opened, "Y-m-d")
+	at := r.PostFormValue("time")
+	at, err := fmtDateTime(at, "Y-m-d H:i")
 	if err == nil {
-		args = append(args, opened)
-		props = append(props, "opened=?")
+		args = append(args, at)
+		props = append(props, "time=?")
 	}
 
 	args = append(args, time.Now().Format("2006-01-02 15:04:05"))
@@ -42,7 +42,7 @@ func apiEditCase(w http.ResponseWriter, r *http.Request) {
 	id := r.PostFormValue("id")
 	args = append(args, id)
 
-	cmd := fmt.Sprintf(`UPDATE cases SET %s WHERE id=?`, strings.Join(props, ","))
+	cmd := fmt.Sprintf(`UPDATE consults SET %s WHERE id=?`, strings.Join(props, ","))
 	_, err = cf.dbx.Exec(cmd, args...)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
