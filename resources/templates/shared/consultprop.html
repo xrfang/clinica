@@ -53,10 +53,9 @@
                 props["time"] = fmtDateTime($('#consultprop #time').val(), "Y-m-d H:i")
                 props["mode"] = $('#consultprop #mode').val()
                 props["status"] = $('#consultprop #status').val()
-                console.log(props)
-                // $.post('/api/editcase', props, function () {
-                //     location.reload()
-                // })
+                $.post('/api/editconsult', props, function () {
+                    location.reload()
+                })
             }
             $('#consultprop').off('hide.bs.modal')
         })
