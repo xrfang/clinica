@@ -47,40 +47,7 @@
   </form>
   <div id="cases"></div>
 </div>
-<div id="chpasswd" class="modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">修改密码</h5>
-      </div>
-      <div class="modal-body">
-        <div class="form-group row">
-          <label for="old" class="col-3 col-form-label col-form-label">原密码</label>
-          <div class="col-9">
-            <input type="password" class="form-control" id="old">
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="new1" class="col-3 col-form-label col-form-label">新密码</label>
-          <div class="col-9">
-            <input type="password" class="form-control" id="new1">
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="new2" class="col-3 col-form-label col-form-label">再次输入</label>
-          <div class="col-9">
-            <input type="password" class="form-control" id="new2">
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <span class="mr-auto" style="color:red" id="errmsg">错误信息...</span>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-success" onclick="submitNewPass()">保存</button>
-      </div>
-    </div>
-  </div>
-</div>
+{{template "passwd"}}
 <script>
   function openCase(id) {
     var uri = "/editcase"
@@ -89,8 +56,8 @@
     var timer = setInterval(checkChild, 500);
     function checkChild() {
       if (child.closed) {
-        alert("Child window closed");
-        clearInterval(timer);
+        clearInterval(timer)
+        location.reload(true)        
       }
     }
   }
@@ -121,34 +88,6 @@
   }
   function doSearch() {
     toast("操作失败", "搜索功能暂未实现")
-  }
-  function changePassword() {
-    $('#chpasswd #old').val('')
-    $('#chpasswd #new1').val('')
-    $('#chpasswd #new2').val('')
-    $('#chpasswd #errmsg').text('')
-    $('#chpasswd').modal()
-  }
-  function submitNewPass() {
-    var old = $('#chpasswd #old').val()
-    var new1 = $('#chpasswd #new1').val()
-    var new2 = $('#chpasswd #new2').val()
-    if (old == "") {
-      $('#chpasswd #errmsg').text('原密码没有输入')
-      return
-    }
-    if (new1 != new2) {
-      $('#chpasswd #errmsg').text('新密码两次输入不一致')
-      return
-    }
-    if (new1 == '') {
-      $('#chpasswd #errmsg').text('新密码不能为空')
-      return
-    }
-    $('#chpasswd #errmsg').text('')
-    $.post("/chpass", { old: old, new: new1 }, function () {
-      $('#chpasswd').modal('hide')
-    })
   }
   $(function () {
     getCases()
