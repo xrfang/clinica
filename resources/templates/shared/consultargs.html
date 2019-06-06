@@ -1,0 +1,93 @@
+{{define "consultargs"}}
+<div class="modal fade" id="consultargs" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="" />
+                    <div class="form-group">
+                        <label for="caption">标题</label>
+                        <input type="text" class="form-control" id="caption" />
+                    </div>
+                    <div class="form-group">
+                        <label for="details">正文</label>
+                        <textarea class="form-control" rows=5 id="details"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function getConsultArgs(ctype, cid, cls, id) {
+        var consult, record
+        $.each(consults.consult, function (i, c) {
+            if (c.id == cid) {
+                consult = c
+                return false
+            }
+        })
+        $.each(consult.records, function (i, r) {
+            if (typeof (id) == 'undefined') {
+                if (ctype == 1 && cls == 3) { //问诊，每次就诊可有多条记录
+                    return false
+                } else if (r.type == ctype && r.class_id == cls) { //非问诊，每次就诊只有一条同类记录
+                    record = r
+                    return false
+                }
+            } else if (r.id == id) {
+                record = r
+                return false
+            }
+        })
+        if (typeof (record) == 'undefined') {
+            return {
+                "consult_id": cid,
+                "category": recType(ctype),
+                "type": ctype,
+                "class_id": cls,
+                "caption": "",
+                "details": ""
+            }
+        }
+        return record
+    }
+    function editConsultArgs(ctype, cid, cls, id) {
+        console.log(`type=${ctype}, consult=${cid}, id=${id}`)
+        r = getConsultArgs(ctype, cid, cls, id)
+        console.log("getConsultArgs:", r)
+        $('#consultargs .modal-title').text(r.category)
+        $('#consultargs .modal-body #caption').val(r.caption)
+        $('#consultargs .modal-body #details').text(r.details)
+        /*
+        $('#consultprop #consult_id').val(c.id)
+        $('#consultprop #time').val(fmtDateTime(c.time, "Y-m-d H:i"))
+        $('#consultprop #mode').val(c.mode)
+        $('#consultprop #status').val(c.status)
+        $('#consultprop').on('hide.bs.modal', function () {
+            var elm = $(document.activeElement);
+            if (elm.hasClass('btn-success')) {
+                var props = {}
+                props["id"] = $('#consultprop #consult_id').val()
+                props["time"] = fmtDateTime($('#consultprop #time').val(), "Y-m-d H:i")
+                props["mode"] = $('#consultprop #mode').val()
+                props["status"] = $('#consultprop #status').val()
+                $.post('/api/editconsult', props, function () {
+                    location.reload()
+                })
+            }
+            $('#consultprop').off('hide.bs.modal')
+        })
+        */
+        $('#consultargs').modal()
+    }
+</script>
+{{end}}

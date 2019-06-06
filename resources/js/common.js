@@ -68,3 +68,27 @@ function fmtDateTime(time, layout) {
     s = ds.length > 5 ? s.replace("s", p(5)) : s.replace("s", "00")
     return s
 }
+
+function recType(t) {
+    switch (t) {
+        case 0: return "主诉"
+        case 1: return "诊断"
+        case 2: return "辩证"
+        case 3: return "思路"
+        case 4: return "开方"
+    }
+    return ""
+}
+
+function diagClass(c) {
+    switch (c) {
+        case 0: return "望诊"
+        case 1: return "闻声"
+        case 2: return "闻味"
+        case 3: return "问诊"
+        case 4: return "脉诊"
+        case 5: return "腹诊"
+        case 6: return "病灶触诊"
+    }
+    return ""
+}

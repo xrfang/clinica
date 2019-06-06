@@ -30,11 +30,11 @@
     <div class="dropdown" style="display:inline-block;float:right">
       <i class="fas fa-ellipsis-v" data-toggle="dropdown" style="padding:0.7rem 0.7rem"></i>
       <div class="dropdown-menu dropdown-menu-right">
-        <a class="dropdown-item" href="javascript:editConsultArgs(0, ${c.id})">编辑【主诉】</a>
-        <a class="dropdown-item" href="javascript:editConsultArgs(1, ${c.id})">编辑【诊断】</a>
-        <a class="dropdown-item" href="javascript:editConsultArgs(2, ${c.id})">编辑【辩证】</a>
-        <a class="dropdown-item" href="javascript:editConsultArgs(3, ${c.id})">编辑【思路】</a>
-        <a class="dropdown-item" href="javascript:editConsultArgs(4, ${c.id})">编辑【开方】</a>
+        <a class="dropdown-item" href="javascript:editConsultArgs(0, ${c.id}, 0)">编辑【主诉】</a>
+        <a class="dropdown-item" href="javascript:editConsultArgs(1, ${c.id}, 0)">编辑【诊断】</a>
+        <a class="dropdown-item" href="javascript:editConsultArgs(2, ${c.id}, 0)">编辑【辩证】</a>
+        <a class="dropdown-item" href="javascript:editConsultArgs(3, ${c.id}, 0)">编辑【思路】</a>
+        <a class="dropdown-item" href="javascript:editConsultArgs(4, ${c.id}, 0)">编辑【开方】</a>
         <div class="dropdown-divider"></div>
         <a class="dropdown-item" href="javascript:editConsultProp(consults.consult[${i}])">编辑就诊记录</a>
       </div>
@@ -45,7 +45,7 @@
       $.each(c.records, function (i, r) {
         card += `
       <div style="margin-bottom:0.3rem">
-        <div style="color:darkblue"><a class="fas fa-edit" href="javascript:editConsultArgs(${r.type}, ${r.consult_id}, ${r.id})"></a>
+        <div style="color:darkblue"><a class="fas fa-edit" href="javascript:editConsultArgs(${r.type}, ${r.consult_id}, ${r.class_id}, ${r.id})"></a>
           <b>[${r.category}]</b>&nbsp;${r.caption}</div>
       </div>
       <div style="margin-bottom:1.5rem;color:#555">${r.details}</div>`
