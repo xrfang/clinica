@@ -30,11 +30,11 @@
     <div class="dropdown" style="display:inline-block;float:right">
       <i class="fas fa-ellipsis-v" data-toggle="dropdown" style="padding:0.7rem 0.7rem"></i>
       <div class="dropdown-menu dropdown-menu-right">
-        <a class="dropdown-item" href="javascript:editConsultArgs(0, ${c.id}, 0)">编辑【主诉】</a>
-        <a class="dropdown-item" href="javascript:editConsultArgs(1, ${c.id}, 0)">编辑【诊断】</a>
-        <a class="dropdown-item" href="javascript:editConsultArgs(2, ${c.id}, 0)">编辑【辩证】</a>
-        <a class="dropdown-item" href="javascript:editConsultArgs(3, ${c.id}, 0)">编辑【思路】</a>
-        <a class="dropdown-item" href="javascript:editConsultArgs(4, ${c.id}, 0)">编辑【开方】</a>
+        <a class="dropdown-item" href="javascript:editConsultArgs(REC_TYPE_COMPLAINT, ${c.id}, 0)">编辑【主诉】</a>
+        <a class="dropdown-item" href="javascript:selectDiagType(${c.id})">编辑【诊断】</a>
+        <a class="dropdown-item" href="javascript:editConsultArgs(REC_TYPE_ANALYSIS, ${c.id}, 0)">编辑【辩证】</a>
+        <a class="dropdown-item" href="javascript:editConsultArgs(REC_TYPE_INSIGHT, ${c.id}, 0)">编辑【思路】</a>
+        <a class="dropdown-item" href="javascript:editConsultArgs(REC_TYPE_SOLUTION, ${c.id}, 0)">编辑【开方】</a>
         <div class="dropdown-divider"></div>
         <a class="dropdown-item" href="javascript:editConsultProp(consults.consult[${i}])">编辑就诊记录</a>
       </div>

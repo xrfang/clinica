@@ -12,7 +12,7 @@ func setupRoutes() {
 	http.HandleFunc("/chpass", chpass)
 	http.HandleFunc("/api/listcases", apiListCases)
 	http.HandleFunc("/api/editcase", apiEditCase)
-	http.HandleFunc("/api/editconsult", apiEditConsult)
+	http.HandleFunc("/api/editconsult", apiEditConsultRecord)
 	http.HandleFunc("/editcase", editCase)
 	http.HandleFunc("/patients", patients)
 }

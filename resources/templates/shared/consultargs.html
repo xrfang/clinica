@@ -33,19 +33,22 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"></h5>
+                <h5 class="modal-title">诊断类型</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
             <div class="modal-body">
                 <form>
-                    <input type="hidden" id="" />
+                    <input type="hidden" id="cid" />
                     <div class="form-group">
-                        <label for="caption">标题</label>
-                        <input type="text" class="form-control" id="caption" />
-                    </div>
-                    <div class="form-group">
-                        <label for="details">正文</label>
-                        <textarea class="form-control" rows=5 id="details"></textarea>
+                        <select class="form-control" id="dtype">
+                            <option value="0">望诊</option>
+                            <option value="1">闻声</option>
+                            <option value="2">闻味</option>
+                            <option value="3">问诊</option>
+                            <option value="4">脉诊</option>
+                            <option value="5">腹诊</option>
+                            <option value="6">病灶触诊</option>
+                        </select>
                     </div>
                 </form>
             </div>
@@ -67,7 +70,7 @@
         })
         $.each(consult.records, function (i, r) {
             if (typeof (id) == 'undefined') {
-                if (ctype == 1 && cls == 3) { //问诊，每次就诊可有多条记录
+                if (ctype == REC_TYPE_DIAGNOSE && cls == DIAG_TYPE_ASK) { //问诊，每次就诊可有多条记录
                     return false
                 } else if (r.type == ctype && r.class_id == cls) { //非问诊，每次就诊只有一条同类记录
                     record = r
@@ -81,7 +84,7 @@
         if (typeof (record) == 'undefined') {
             return {
                 "consult_id": cid,
-                "category": recType(ctype),
+                "category": recType(ctype, cls),
                 "type": ctype,
                 "class_id": cls,
                 "caption": "",
@@ -91,9 +94,7 @@
         return record
     }
     function editConsultArgs(ctype, cid, cls, id) {
-        console.log(`type=${ctype}, consult=${cid}, id=${id}`)
         r = getConsultArgs(ctype, cid, cls, id)
-        console.log("getConsultArgs:", r)
         $('#consultargs .modal-title').text(r.category)
         $('#consultargs .modal-body #r_id').val(r.id)
         $('#consultargs .modal-body #r_type').val(r.type)
@@ -111,16 +112,27 @@
                 props["consult_id"] = $('#consultargs .modal-body #r_consult').val()
                 props["caption"] = $('#consultargs .modal-body #caption').val()
                 props["details"] = $('#consultargs .modal-body #details').val()
-                console.log("TODO: submitting:", props)
-                /*
                 $.post('/api/editconsult', props, function () {
                     location.reload()
                 })
-                */
             }
             $('#consultargs').off('hide.bs.modal')
         })
         $('#consultargs').modal()
+    }
+    function selectDiagType(consult_id) {
+        $('#diagtypes .modal-body #cid').val(consult_id)
+        $('#diagtypes .modal-body #dtype').val(DIAG_TYPE_ASK) //默认选择“问诊”
+        $('#diagtypes').on('hide.bs.modal', function() {
+            var elm = $(document.activeElement);
+            if (elm.hasClass('btn-success')) {
+                var id = $('#diagtypes .modal-body #cid').val()
+                var dt = $('#diagtypes .modal-body #dtype').val()
+                editConsultArgs(REC_TYPE_DIAGNOSE, id, dt)
+            }
+            $('#diagtypes').off('hide.bs.modal')
+        })
+        $('#diagtypes').modal()
     }
 </script>
 {{end}}

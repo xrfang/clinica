@@ -69,13 +69,30 @@ function fmtDateTime(time, layout) {
     return s
 }
 
-function recType(t) {
-    switch (t) {
-        case 0: return "主诉"
-        case 1: return "诊断"
-        case 2: return "辩证"
-        case 3: return "思路"
-        case 4: return "开方"
+function recType(t, dt) {
+    switch (parseInt(t)) {
+        case REC_TYPE_COMPLAINT: return "主诉"
+        case REC_TYPE_DIAGNOSE:
+            switch (parseInt(dt)) {
+                case DIAG_TYPE_LOOK: return "望诊"
+                case DIAG_TYPE_HEAR: return "闻声"
+                case DIAG_TYPE_SMELL: return "闻味"
+                case DIAG_TYPE_ASK: return "问诊"
+                case DIAG_TYPE_PULSE: return "脉诊"
+                case DIAG_TYPE_BELLY: return "腹诊"
+                case DIAG_TYPE_TOUCH: return "病灶触诊"
+            }
+            break
+        case REC_TYPE_ANALYSIS: return "辩证"
+        case REC_TYPE_INSIGHT: return "思路"
+        case REC_TYPE_SOLUTION: return "开方"
     }
-    return ""
+    return `type=${t}, class=${dt}`
 }
+
+
+
+
+
+
+
