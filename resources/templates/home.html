@@ -49,17 +49,17 @@
 </div>
 {{template "passwd"}}
 <script>
+  function checkChild() {
+    if (child.closed) {
+      clearInterval(timer)
+      location.reload(true)
+    }
+  }
   function openCase(id) {
     var uri = "/editcase"
     if (typeof (id) != "undefined") uri += `?id=${id}`
     var child = window.open(uri)
     var timer = setInterval(checkChild, 500);
-    function checkChild() {
-      if (child.closed) {
-        clearInterval(timer)
-        location.reload(true)        
-      }
-    }
   }
   function getCases() {
     $.get("/api/listcases", null, function (ret) {

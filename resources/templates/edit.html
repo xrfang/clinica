@@ -46,7 +46,7 @@
         card += `
       <div style="margin-bottom:0.3rem">
         <div style="color:darkblue"><a class="fas fa-edit" href="javascript:editConsultArgs(${r.type}, ${r.consult_id}, ${r.class_id}, ${r.id})"></a>
-          <b>[${r.category}]</b>&nbsp;${r.caption}</div>
+          <b>[${r.category}]&nbsp;${r.caption}</b></div>
       </div>
       <div style="margin-bottom:1.5rem;color:#555">${r.details}</div>`
       })
@@ -56,7 +56,7 @@
 </div>`
       $('#consults').append(card)
     })
-    if (consults.consult.length < 2) {
+    if (consults.consult != null && consults.consult.length < 2) {
       $('#consults').append(`<div class="card"></div>`)
     }
   })

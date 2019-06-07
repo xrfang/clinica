@@ -8,6 +8,36 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <input type="hidden" id="r_id" />
+                    <input type="hidden" id="r_type" />
+                    <input type="hidden" id="r_class" />
+                    <input type="hidden" id="r_consult" />
+                    <div class="form-group">
+                        <label for="caption">标题</label>
+                        <input type="text" class="form-control" id="caption" />
+                    </div>
+                    <div class="form-group">
+                        <label for="details">正文</label>
+                        <textarea class="form-control" rows=5 id="details"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="diagtypes" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form>
                     <input type="hidden" id="" />
                     <div class="form-group">
                         <label for="caption">标题</label>
@@ -65,28 +95,31 @@
         r = getConsultArgs(ctype, cid, cls, id)
         console.log("getConsultArgs:", r)
         $('#consultargs .modal-title').text(r.category)
+        $('#consultargs .modal-body #r_id').val(r.id)
+        $('#consultargs .modal-body #r_type').val(r.type)
+        $('#consultargs .modal-body #r_class').val(r.class_id)
+        $('#consultargs .modal-body #r_consult').val(r.consult_id)
         $('#consultargs .modal-body #caption').val(r.caption)
-        $('#consultargs .modal-body #details').text(r.details)
-        /*
-        $('#consultprop #consult_id').val(c.id)
-        $('#consultprop #time').val(fmtDateTime(c.time, "Y-m-d H:i"))
-        $('#consultprop #mode').val(c.mode)
-        $('#consultprop #status').val(c.status)
-        $('#consultprop').on('hide.bs.modal', function () {
+        $('#consultargs .modal-body #details').val(r.details)
+        $('#consultargs').on('hide.bs.modal', function () {
             var elm = $(document.activeElement);
             if (elm.hasClass('btn-success')) {
                 var props = {}
-                props["id"] = $('#consultprop #consult_id').val()
-                props["time"] = fmtDateTime($('#consultprop #time').val(), "Y-m-d H:i")
-                props["mode"] = $('#consultprop #mode').val()
-                props["status"] = $('#consultprop #status').val()
+                props["id"] = $('#consultargs .modal-body #r_id').val()
+                props["type"] = $('#consultargs .modal-body #r_type').val()
+                props["class_id"] = $('#consultargs .modal-body #r_class').val()
+                props["consult_id"] = $('#consultargs .modal-body #r_consult').val()
+                props["caption"] = $('#consultargs .modal-body #caption').val()
+                props["details"] = $('#consultargs .modal-body #details').val()
+                console.log("TODO: submitting:", props)
+                /*
                 $.post('/api/editconsult', props, function () {
                     location.reload()
                 })
+                */
             }
-            $('#consultprop').off('hide.bs.modal')
+            $('#consultargs').off('hide.bs.modal')
         })
-        */
         $('#consultargs').modal()
     }
 </script>

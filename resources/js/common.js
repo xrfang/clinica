@@ -79,16 +79,3 @@ function recType(t) {
     }
     return ""
 }
-
-function diagClass(c) {
-    switch (c) {
-        case 0: return "望诊"
-        case 1: return "闻声"
-        case 2: return "闻味"
-        case 3: return "问诊"
-        case 4: return "脉诊"
-        case 5: return "腹诊"
-        case 6: return "病灶触诊"
-    }
-    return ""
-}
