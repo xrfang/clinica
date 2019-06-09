@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -18,32 +17,46 @@ func apiEditConsult(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "您的使用权限被冻结，请联系管理员", http.StatusForbidden)
 		return
 	}
-	var args []interface{}
-	var props []string
-
+	var (
+		args []interface{}
+		prop []string
+		upds []string
+		stmt string
+	)
 	mode := r.PostFormValue("mode")
 	args = append(args, mode)
-	props = append(props, "mode=?")
+	prop = append(prop, "mode")
+	upds = append(upds, "mode=?")
 
 	status := r.PostFormValue("status")
 	args = append(args, status)
-	props = append(props, "status=?")
+	prop = append(prop, "status")
+	upds = append(upds, "status=?")
 
 	at := r.PostFormValue("time")
 	at, err := fmtDateTime(at, "Y-m-d H:i")
 	if err == nil {
 		args = append(args, at)
-		props = append(props, "time=?")
+		prop = append(prop, "time")
+		upds = append(upds, "time=?")
 	}
 
 	args = append(args, time.Now().Format("2006-01-02 15:04:05"))
-	props = append(props, "updated=?")
+	prop = append(prop, "updated")
+	upds = append(upds, "updated=?")
 
 	id := r.PostFormValue("id")
-	args = append(args, id)
-
-	cmd := fmt.Sprintf(`UPDATE consults SET %s WHERE id=?`, strings.Join(props, ","))
-	_, err = cf.dbx.Exec(cmd, args...)
+	if id == "" {
+		caseID := r.PostFormValue("case_id")
+		args = append(args, caseID)
+		prop = append(prop, "case_id")
+		stmt = `INSERT INTO consults (` + strings.Join(prop, ",") + `) VALUES (?` +
+			strings.Repeat(`,?`, len(prop)-1) + `)`
+	} else {
+		args = append(args, id)
+		stmt = `UPDATE consults SET ` + strings.Join(upds, ",") + ` WHERE id=?`
+	}
+	_, err = cf.dbx.Exec(stmt, args...)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

@@ -7,6 +7,7 @@
     <div id="info" style="padding:0.5rem 0.6rem 0.5rem 0.5rem">
       <b>[<span id="patient_name"></span>]</b>&nbsp;<span id="summary"></span>
       &nbsp;<a class="fas fa-edit" href="javascript:editCaseProp(consults)"></a>
+      <i style="float:right;padding-top:0.3rem" class="fas fa-calendar-plus" onclick="editConsultProp(consults.id)"></i>
     </div>
     <div id="consults"></div>
   </div>
@@ -21,6 +22,10 @@
     $('#summary').text(consults.summary)
     $.each(consults.consult, function (i, c) {
       var bg = consultBgColor(c.status)
+      var show = "show"
+      if (c.status > 1) {
+        show = ""
+      }
       var card = `
 <div class="card">
   <div class="card-header" style="padding:0;background:${bg}" id="h_${c.id}">
@@ -40,7 +45,7 @@
       </div>
     </div>
   </div>
-  <div id="c_${c.id}" class="collapse" data-parent="#portfolio">
+  <div id="c_${c.id}" class="collapse ${show}" data-parent="#portfolio">
     <div class="card-body">`
       $.each(c.records, function (i, r) {
         card += `
@@ -56,9 +61,8 @@
 </div>`
       $('#consults').append(card)
     })
-    if (consults.consult != null && consults.consult.length < 2) {
-      $('#consults').append(`<div class="card"></div>`)
-    }
+    $('#consults').append(`<div class="card"></div>`)
+    $('#consults').append(`<div>&nbsp;</div>`)
   })
 </script>
 {{template "caseprop"}}

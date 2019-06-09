@@ -112,7 +112,7 @@
                 props["consult_id"] = $('#consultargs .modal-body #r_consult').val()
                 props["caption"] = $('#consultargs .modal-body #caption').val()
                 props["details"] = $('#consultargs .modal-body #details').val()
-                $.post('/api/editconsult', props, function () {
+                $.post('/api/editrecord', props, function () {
                     location.reload()
                 })
             }

@@ -3,11 +3,12 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">就诊记录</h5>
+                <h5 class="modal-title"></h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
             <div class="modal-body">
                 <form>
+                    <input type="hidden" id="case_id" />
                     <input type="hidden" id="consult_id" />
                     <div class="form-group">
                         <label for="opened">就诊时间</label>
@@ -41,14 +42,26 @@
 </div>
 <script>
     function editConsultProp(c) {
-        $('#consultprop #consult_id').val(c.id)
-        $('#consultprop #time').val(fmtDateTime(c.time, "Y-m-d H:i"))
-        $('#consultprop #mode').val(c.mode)
-        $('#consultprop #status').val(c.status)
+        if (typeof (c) == "object") {
+            $('#consultprop .modal-title').text('编辑就诊记录')
+            $('#consultprop #consult_id').val(c.id)
+            $('#consultprop #time').val(fmtDateTime(c.time, "Y-m-d H:i"))
+            $('#consultprop #mode').val(c.mode)
+            $('#consultprop #status').val(c.status)
+        } else {
+            var now = (new Date()).toLocaleString('zh-CN', {hour12:false})
+            $('#consultprop .modal-title').text('新增就诊记录')
+            $('#consultprop #case_id').val(c)
+            $('#consultprop #consult_id').val('')
+            $('#consultprop #time').val(fmtDateTime(now, "Y-m-d H:i"))
+            $('#consultprop #mode').val(0)
+            $('#consultprop #status').val(1)
+        }
         $('#consultprop').on('hide.bs.modal', function () {
             var elm = $(document.activeElement);
             if (elm.hasClass('btn-success')) {
                 var props = {}
+                props["case_id"] = $('#consultprop #case_id').val()
                 props["id"] = $('#consultprop #consult_id').val()
                 props["time"] = fmtDateTime($('#consultprop #time').val(), "Y-m-d H:i")
                 props["mode"] = $('#consultprop #mode').val()

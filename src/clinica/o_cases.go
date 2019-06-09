@@ -26,7 +26,7 @@ func (c *caseBrief) GetConsults() (err error) {
 		}
 	}()
 	audit.Assert(cf.dbx.Select(&c.Consults, `SELECT * FROM consults WHERE case_id=? ORDER BY 
-	    updated DESC LIMIT 100`, c.ID))
+	    time DESC LIMIT 100`, c.ID))
 	for i := 0; i < len(c.Consults); i++ {
 		audit.Assert(c.Consults[i].GetRecords())
 	}
