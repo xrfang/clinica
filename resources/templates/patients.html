@@ -29,10 +29,14 @@
             <small class="form-text text-muted">显示{{.Total}}名注册患者中的{{len .Patients}}名</small>
         </div>
     </form>
-    <button class="btn btn-success" style="margin:0.5rem;width:300px" onclick="editPatient(this)">添加新患者</button>
+    <div class="alert alert-danger" style="cursor:pointer;display:inline-block;margin:0.5rem;width:300px" 
+       onclick="editPatient(this)">添加新患者</div>
     {{range .Patients }}
-    <button class="btn alert-{{if eq .Gender 0}}success{{else}}primary{{end}}" onclick="editPatient(this)" pid="{{.ID}}"
-        style="margin:0.5rem;width:300px">{{.Caption}}</button>
+    <div class="alert alert-{{if eq .Gender 0}}success{{else}}primary{{end}}" onclick="editPatient(this)"
+        style="cursor:pointer;display:inline-block;margin:0.5rem;width:300px" pid="{{.ID}}">
+        {{.Caption}}<i style="float:right;padding-top:0.3rem" class="fas fa-briefcase-medical"
+        onclick="event.stopPropagation();alert('NEW CASE...')"></i>
+    </div>
     {{end}}
 </div>
 <div class="modal" tabindex="-1" role="dialog" id="pd">
@@ -113,7 +117,7 @@
             $('#pd #contact').val(p.contact)
             $('#pd #memo').val(p.memo)
             $('#pd #gender').val(p.gender)
-            $('#pd #del').css("display", "")            
+            $('#pd #del').css("display", "")
         }
         $('#pd').modal()
     }
@@ -141,7 +145,7 @@
                 }
             })
         })
-    }    
+    }
     $(document).ready(function () {
         $('#search #terms').keydown(function (event) {
             if (event.keyCode == 13) {
