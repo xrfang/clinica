@@ -48,16 +48,16 @@
 </div>
 {{template "passwd"}}
 <script>
-  function checkChild() {
-    if (child.closed) {
-      clearInterval(timer)
-      location.reload(true)
-    }
-  }
   function openCase(id) {
     var uri = "/editcase"
     if (typeof (id) != "undefined") uri += `?id=${id}`
     var child = window.open(uri)
+    var checkChild = function () {
+      if (child.closed) {
+        clearInterval(timer)
+        location.reload(true)
+      }
+    }
     var timer = setInterval(checkChild, 500);
   }
   function getCases() {

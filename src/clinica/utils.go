@@ -10,6 +10,7 @@ import (
 func fmtDateTime(dt, layout string) (dts string, err error) {
 	defer func() {
 		if e := recover(); e != nil {
+			dts = ""
 			err = e.(error)
 		}
 	}()

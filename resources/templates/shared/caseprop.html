@@ -9,6 +9,7 @@
             <div class="modal-body">
                 <form>
                     <input type="hidden" id="case_id" />
+                    <input type="hidden" id="patient_id" />
                     <div class="form-group">
                         <label for="summary">概述</label>
                         <div> <input type="text" class="form-control" id="summary" /> </div>
@@ -38,22 +39,34 @@
     </div>
 </div>
 <script>
-    function editCaseProp(c) {
-        $('#caseprop #case_id').val(c.id)
-        $('#caseprop #patientName').text(c.patient_name)
-        $('#caseprop #summary').val(c.summary)
-        $('#caseprop #opened').val(fmtDateTime(c.opened, "Y-m-d"))
-        $('#caseprop #status').val(c.status)
+    function editCaseProp(c, name) {
+        if (typeof (name) == "undefined") {
+            $('#caseprop #case_id').val(c.id)
+            $('#caseprop #patientName').text(c.patient_name)
+            $('#caseprop #summary').val(c.summary)
+            $('#caseprop #opened').val(fmtDateTime(c.opened, "Y-m-d"))
+            $('#caseprop #status').val(c.status)
+        } else {
+            $('#caseprop #patient_id').val(c)
+            $('#caseprop #patientName').text(name)
+            var today = (new Date).toLocaleDateString()
+            $('#caseprop #opened').val(fmtDateTime(today, "Y-m-d"))
+        }
         $('#caseprop').on('hide.bs.modal', function () {
             var elm = $(document.activeElement);
             if (elm.hasClass('btn-success')) {
                 var props = {}
+                props["patient_id"] = $('#caseprop #patient_id').val()
                 props["id"] = $('#caseprop #case_id').val()
                 props["summary"] = $('#caseprop #summary').val()
                 props["opened"] = fmtDateTime($('#caseprop #opened').val(), "Y-m-d")
                 props["status"] = $('#caseprop #status').val()
-                $.post('/api/editcase', props, function () {
-                    location.reload()
+                $.post('/api/editcase', props, function (data) {
+                    if (props["id"] == "") {
+                        window.open(`/editcase?id=${data}`)
+                    } else {
+                        location.reload()
+                    }
                 })
             }
             $('#caseprop').off('hide.bs.modal')

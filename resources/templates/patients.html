@@ -35,7 +35,7 @@
     <div class="alert alert-{{if eq .Gender 0}}success{{else}}primary{{end}}" onclick="editPatient(this)"
         style="cursor:pointer;display:inline-block;margin:0.5rem;width:300px" pid="{{.ID}}">
         {{.Caption}}<i style="float:right;padding-top:0.3rem" class="fas fa-briefcase-medical"
-        onclick="event.stopPropagation();alert('NEW CASE...')"></i>
+        onclick="event.stopPropagation();editCaseProp({{.ID}}, '{{.Name}}')"></i>
     </div>
     {{end}}
 </div>
@@ -92,6 +92,7 @@
     </div>
 </div>
 {{template "confirm"}}
+{{template "caseprop"}}
 <script>
     var patients = {}
     {{ range.Patients }}
