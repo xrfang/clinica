@@ -25,7 +25,7 @@ func main() {
 		return
 	}
 	if *pkg != "" {
-		audit.Assert(res.Pack(*pkg))
+		audit.Assert(res.Pack(*pkg, ""))
 		fmt.Printf("resources under '%s' packed.\n", *pkg)
 		return
 	}
